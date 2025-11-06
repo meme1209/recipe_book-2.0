@@ -8,11 +8,11 @@ const integrateLicense = require('./licenseIntegration');
 integrateLicense(app, express);
 
 // serve static assets (adjust path if your client files live elsewhere)
-app.use(express.static(path.join(__dirname, '..', 'public')));
+app.use(express.static(path.join(__dirname, '..',)));
 
 // simple index route (optional)
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, '..', 'index.html'));
 });
 
 // start server
