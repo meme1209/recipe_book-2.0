@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="manifest" href="manifest.json" />
+  <title>CookBook</title>
+</head>
+<body>
+  <header>
+    <h1>CookBook</h1>
+    <p>Your recipe collection</p>
+  </header>
+
+  <main>
+    <section>
+        <h2>Search Recipes</h2>
+        <input type="text" id="SearchInput" placeholder="Type to search..." autocomplete="off" />
+        <ul id="searchResults" class="hidden"></ul>
+    </section>
+    <section>
+      <h2>Sides</h2>
+      <ul>
+        <li><a href="recipes/coleslaw.html">Coleslaw</a></li>
+        <li><a href="recipes/garlic-bread.html">Garlic Bread</a></li>
+        <li><a href="recipes/mashed-potatoes.html">Mashed Potatoes</a></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Main Dishes</h2>
+      <ul>
+        <li><a href="recipes/chili.html">Chili</a></li>
+        <li><a href="recipes/lasagna.html">Lasagna</a></li>
+        <li><a href="recipes/stir-fry.html">Stir Fry</a></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Desserts</h2>
+      <ul>
+        <li><a href="recipes/apple-pie.html">Apple Pie</a></li>
+        <li><a href="recipes/brownies.html">Brownies</a></li>
+        <li><a href="recipes/ice-cream.html">Ice Cream</a></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Breakfast</h2>
+      <ul>
+        <li><a href="recipes/french-toast.html">French Toast</a></li>
+        <li><a href="recipes/pancakes.html">Pancakes</a></li>
+        <li><a href="recipes/scrambled-eggs.html">Scrambled Eggs</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 CookBook</p>
+  </footer>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
+
+    const searchInput = document.getElementById('SearchInput');
+    const searchResults = document.getElementById('searchResults');
+
+    const recipes = [
+      { name: "Apple Pie", url: "recipes/apple-pie.html" },
+      { name: "Brownies", url: "recipes/brownies.html" },
+      { name: "Chili", url: "recipes/chili.html" },
+      { name: "Coleslaw", url: "recipes/coleslaw.html" },
+      { name: "French Toast", url: "recipes/french-toast.html" },
+      { name: "Garlic Bread", url: "recipes/garlic-bread.html" },
+      { name: "Ice Cream", url: "recipes/ice-cream.html" },
+      { name: "Lasagna", url: "recipes/lasagna.html" },
+      { name: "Mashed Potatoes", url: "recipes/mashed-potatoes.html" },
+      { name: "Pancakes", url: "recipes/pancakes.html" },
+      { name: "Scrambled Eggs", url: "recipes/scrambled-eggs.html" },
+      { name: "Stir Fry", url: "recipes/stir-fry.html" }
+    ];
+
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.toLowerCase();
+      searchResults.innerHTML = '';
+      if (query === '') {
+        searchResults.classList.add('hidden');
+        return;
+      }
+
+      const matches = recipes.filter(recipe =>
+        recipe.name.toLowerCase().includes(query)
+      );
+
+      if (matches.length === 0) {
+        searchResults.innerHTML = '<li>No results found</li>';
+      } else {
+        matches.forEach(recipe => {
+          const li = document.createElement('li');
+          const link = document.createElement('a');
+          link.href = recipe.url;
+          link.textContent = recipe.name;
+          li.appendChild(link);
+          searchResults.appendChild(li);
+        });
+      }
+
+      searchResults.classList.remove('hidden');
+    });
+  </script>
+</body>
+</html>
