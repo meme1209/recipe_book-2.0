@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>License Status</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    /* minimal overrides if style.css missing */
+    body { font-family: sans-serif; padding:24px; background:#f7f7f7; }
+    .box { background:#fff; padding:18px; border-radius:6px; max-width:520px; margin:32px auto; box-shadow:0 6px 18px rgba(0,0,0,.06); }
+    input, button { padding:8px; font-size:14px; }
+    .msg { margin-top:12px; min-height:20px; }
+    .ok { color: #080; } .err { color:#b00; }
+  </style>
+</head>
+<body>
+  <div class="box" role="main">
+    <h2>License status</h2>
+    <p>This page lets you check whether the stored license key is valid (accessible without a license).</p>
+
+    <div>
+      <label for="key">License key</label><br/>
+      <input id="key" type="text" placeholder="Enter or paste license key" style="width:100%" />
+    </div>
+
+    <div style="margin-top:12px;">
+      <button id="check">Check License</button>
+      <button id="save">Save to cookie</button>
+      <a href="/index.html" style="margin-left:8px;">Back</a>
+    </div>
+
+    <div id="message" class="msg" aria-live="polite"></div>
+  </div>
+
+  <script>
+    function readCookie(name) {
+      const v = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+      return v ? decodeURIComponent(v.pop()) : '';
+    }
+    function setCookie(name, val) {
+      document.cookie = name + '=' + encodeURIComponent(val) + '; path=/; max-age=' + (60*60*24*365);
+    }
+    function clearCookie(name) {
+      document.cookie = name + '=; path=/; max-age=0';
+    }
+
+    const input = document.getElementById('key');
+    const msg = document.getElementById('message');
+    const checkBtn = document.getElementById('check');
+    const saveBtn = document.getElementById('save');
+
+    // prefill from cookie if available
+    const existing = readCookie('licenseKey');
+    if (existing) input.value = existing;
+
+    async function verifyKey(key) {
+      try {
+        const res = await fetch('/api/license/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-license-key': key },
+          body: JSON.stringify({ key }),
+          credentials: 'same-origin'
+        });
+        const body = await res.json().catch(()=>null);
+        if (res.ok) return { ok:true, body };
+        return { ok:false, status: res.status, body };
+      } catch (e) {
+        return { ok:false, error: e };
+      }
+    }
+
+    checkBtn.addEventListener('click', async () => {
+      const key = input.value.trim();
+      if (!key) { msg.textContent = 'Enter a key first.'; msg.className = 'msg err'; return; }
+      msg.textContent = 'Checking...'; msg.className = 'msg';
+      const r = await verifyKey(key);
+      if (r.ok) {
+        msg.textContent = 'Valid license. Details: ' + (r.body && r.body.license ? JSON.stringify(r.body.license) : 'verified');
+        msg.className = 'msg ok';
+      } else {
+        if (r.status) {
+          msg.textContent = 'Server response: ' + (r.body && r.body.error ? r.body.error : 'invalid');
+        } else {
+          msg.textContent = 'Could not verify (network or endpoint missing).';
+        }
+        msg.className = 'msg err';
+      }
+    });
+
+    saveBtn.addEventListener('click', () => {
+      const key = input.value.trim();
+      if (!key) { msg.textContent = 'Enter a key to save.'; msg.className='msg err'; return; }
+      setCookie('licenseKey', key);
+      msg.textContent = 'Saved to cookie. The app will use this key on next request.';
+      msg.className='msg ok';
+    });
+  </script>
+</body>
+</html>
