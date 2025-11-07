@@ -88,12 +88,67 @@
       }
     });
 
+    // Helper to read ?redirect=... and return decoded value or null
+    function getRedirectParam() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const r = params.get('redirect');
+        return r ? decodeURIComponent(r) : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    const redirectTarget = getRedirectParam();
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const key = input.value.trim();
+      if (!key) {
+        msg.textContent = 'Please enter a license key.';
+        msg.className = 'msg error';
+        return;
+      }
+
+      msg.textContent = 'Verifying...';
+      msg.className = 'msg';
+
+      setLicenseCookie(key);
+
+      const result = await tryVerify(key);
+      if (result.ok) {
+        msg.textContent = 'License verified and saved. Redirecting...';
+        msg.className = 'msg success';
+        setTimeout(()=> {
+          if (redirectTarget) location.href = redirectTarget;
+          else location.reload();
+        }, 700);
+      } else {
+        if (result.error) {
+          msg.textContent = 'Saved locally. If verification is needed, the app will validate the key on next request.';
+          msg.className = 'msg';
+          setTimeout(()=> {
+            if (redirectTarget) location.href = redirectTarget;
+            else location.reload();
+          }, 700);
+        } else {
+          clearLicenseCookie();
+          msg.textContent = 'License invalid. Please try again.';
+          msg.className = 'msg error';
+        }
+      }
+    });
+
     saveBtn.addEventListener('click', () => {
       const key = input.value.trim();
-      if (!key) { msg.textContent = 'Enter a key to save.'; msg.className='msg err'; return; }
-      setCookie('licenseKey', key);
-      msg.textContent = 'Saved to cookie. The app will use this key on next request.';
-      msg.className='msg ok';
+      if (!key) { msg.textContent = 'Please enter a license key to save.'; msg.className = 'msg error'; return; }
+      setLicenseCookie(key);
+      msg.textContent = 'Saved. Redirecting...';
+      msg.className = 'msg success';
+      setTimeout(()=> {
+        if (redirectTarget) location.href = redirectTarget;
+        else location.reload();
+      }, 500);
     });
   </script>
 </body>
