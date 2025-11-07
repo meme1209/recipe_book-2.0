@@ -1,21 +1,31 @@
 const express = require('express');
 const path = require('path');
+const mongoose = require('mongoose');
+require('dotenv').config();
 
 const app = express();
 
-// integrate license logic (uses cookie-parser and JSON parsing internally)
+// --- Connect to MongoDB ---
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => console.log('✅ Connected to MongoDB'))
+.catch(err => console.error('❌ MongoDB connection error:', err));
+
+// --- Integrate license logic ---
 const integrateLicense = require('./licenseIntegration');
 integrateLicense(app, express);
 
-// serve static assets (adjust path if your client files live elsewhere)
+// --- Serve static assets ---
 app.use(express.static(path.join(__dirname, '..')));
 
-// simple index route (optional)
+// --- Simple index route ---
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'index.html'));
 });
 
-// start server
+// --- Start server ---
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
