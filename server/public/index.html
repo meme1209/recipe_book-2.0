@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Enter License</title>
+  <style>
+    body { font-family: sans-serif; display:flex; align-items:center; justify-content:center; height:100vh; margin:0; background:#f7f7f7; }
+    .card { background:#fff; padding:24px; border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,.08); width:320px; }
+    label { display:block; margin-bottom:8px; font-weight:600; }
+    input[type="text"] { width:100%; padding:8px; margin-bottom:12px; box-sizing:border-box; }
+    button { padding:8px 12px; margin-right:8px; }
+    .msg { margin-top:12px; min-height:20px; color:#333; }
+    .error { color:#b00; }
+    .success { color:#080; }
+  </style>
+</head>
+<body>
+  <div class="card" role="main">
+    <h2>Verify your license</h2>
+    <p>Enter your license key to unlock the app. This page is accessible without a license.</p>
+
+    <form id="licenseForm">
+      <label for="licenseKey">License key</label>
+      <input id="licenseKey" name="licenseKey" type="text" autocomplete="off" placeholder="XXXX-XXXX-XXXX" />
+      <div>
+        <button id="verifyBtn" type="submit">Verify & Save</button>
+        <button id="saveBtn" type="button">Save Only</button>
+      </div>
+    </form>
+
+    <div class="msg" id="message" aria-live="polite"></div>
+  </div>
+
+  <script>
+    // set cookie helper
+    function setLicenseCookie(key) {
+      // 1 year expiry
+      document.cookie = 'licenseKey=' + encodeURIComponent(key) + '; path=/; max-age=' + (60*60*24*365);
+    }
+    function clearLicenseCookie() {
+      document.cookie = 'licenseKey=; path=/; max-age=0';
+    }
+
+    const form = document.getElementById('licenseForm');
+    const input = document.getElementById('licenseKey');
+    const msg = document.getElementById('message');
+    const saveBtn = document.getElementById('saveBtn');
+
+    // Try to use a backend verify endpoint if available; otherwise saving cookie is still useful
+    async function tryVerify(key) {
+      // This endpoint is optional — if your server exposes a verify route adjust the path accordingly.
+      const url = '/api/license/verify';
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-license-key': key
+          },
+          body: JSON.stringify({ key }),
+          credentials: 'same-origin'
+        });
+        return { ok: res.ok, status: res.status, body: await (res.json().catch(()=>null)) };
+      } catch (e) {
+        // network error or endpoint not present
+        return { ok: false, error: e };
+      }
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const key = input.value.trim();
+      if (!key) {
+        msg.textContent = 'Please enter a license key.';
+        msg.className = 'msg error';
+        return;
+      }
+
+      msg.textContent = 'Verifying...';
+      msg.className = 'msg';
+
+      setLicenseCookie(key);
+
+      const result = await tryVerify(key);
+      if (result.ok) {
+        msg.textContent = 'License verified and saved. Reloading...';
+        msg.className = 'msg success';
+        setTimeout(()=> location.reload(), 900);
+      } else {
+        // If verify endpoint doesn't exist or returned error, still leave the cookie and suggest reloading.
+        if (result.error) {
+          msg.textContent = 'Saved locally. If verification is needed, the app will validate the key on next request.';
+          msg.className = 'msg';
+          setTimeout(()=> location.reload(), 900);
+        } else {
+          // server responded but not ok (invalid license)
+          clearLicenseCookie();
+          msg.textContent = 'License invalid. Please try again.';
+          msg.className = 'msg error';
+        }
+      }
+    });
+
+    saveBtn.addEventListener('click', () => {
+      const key = input.value.trim();
+      if (!key) {
+        msg.textContent = 'Please enter a license key to save.';
+        msg.className = 'msg error';
+        return;
+      }
+      setLicenseCookie(key);
+      msg.textContent = 'Saved. Reloading...';
+      msg.className = 'msg success';
+      setTimeout(()=> location.reload(), 700);
+    });
+
+    // usability: focus input on load
+    input.focus();
+  </script>
+</body>
+</html>

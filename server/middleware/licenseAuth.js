@@ -2,8 +2,13 @@ const License = require('../models/License');
 
 module.exports = async function licenseAuth(req, res, next) {
   try {
-    // allow index page and root without license
-    if (req.method === 'GET' && (req.path === '/' || req.path === '/index.html')) {
+    // allow index page, root, and style.css without license
+    if (req.method === 'GET' && (
+      req.path === '/' ||
+      req.path === '/index.html' ||
+      // allow any path that ends with style.css (e.g. /style.css or /css/style.css)
+      (typeof req.path === 'string' && req.path.endsWith('style.css'))
+    )) {
       return next();
     }
 
