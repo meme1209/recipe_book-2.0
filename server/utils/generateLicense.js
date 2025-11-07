@@ -3,7 +3,7 @@ const crypto = require('crypto');
 const License = require('../models/License');
 
 // Replace with your actual MongoDB URI
-const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://abramwaldner4_db_user:waldnerJacobi1@recipe.yukpwu3.mongodb.net/?appName=recipe';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://abramwaldner4_db_user:waldnerJacobi1@recipebook.dwb8f9n.mongodb.net/?appName=recipebook';
 
 async function generateLicense(isAdmin = false) {
   try {
