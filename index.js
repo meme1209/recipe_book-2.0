@@ -1,2 +1,2 @@
-// Minimal root entry that delegates to server/server.js
-require('./server/server.js');
+// Delegate to the single src entry that Render uses
+require('./src/index.js');
