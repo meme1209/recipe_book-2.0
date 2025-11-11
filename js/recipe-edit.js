@@ -7,18 +7,31 @@
 		if (!id) return;
 
 		var title = document.querySelector('.recipe-title');
-		var ing = document.querySelector('.recipe-ingredients');
+		var ingredientsLists = document.querySelectorAll('.recipe-ingredients');
 		var instr = document.querySelector('.recipe-instructions');
-		if (!title || !ing || !instr) return;
 
-		// preserve originals on first load to allow reset
+		// If there's no title, no ingredients, or no instructions, stop
+		if (!title || ingredientsLists.length === 0 || !instr) return;
+
+		// Just use the first ingredients section as the editable target
+		var ing = ingredientsLists[0];
+
+		// Optionally merge all ingredients into one array (not strictly needed for editing)
+		var allIngredients = [];
+		ingredientsLists.forEach(list => {
+			list.querySelectorAll('li').forEach(li => {
+				allIngredients.push(li.textContent.trim());
+			});
+		});
+
+		// Preserve originals on first load to allow reset
 		if (!title.dataset.original) title.dataset.original = title.innerHTML;
 		if (!ing.dataset.original) ing.dataset.original = ing.innerHTML;
 		if (!instr.dataset.original) instr.dataset.original = instr.innerHTML;
 
 		var key = 'recipe::' + id;
 
-		// restore saved copy if present
+		// Restore saved copy if present
 		(function loadSaved() {
 			try {
 				var raw = localStorage.getItem(key);
@@ -30,7 +43,7 @@
 			} catch (e) { /* ignore parse errors/quota errors */ }
 		})();
 
-		// inject toolbar into header
+		// Inject toolbar
 		var header = document.querySelector('header') || root;
 		var toolbar = document.createElement('div');
 		toolbar.className = 'recipe-editor';
@@ -52,7 +65,7 @@
 			[title, ing, instr].forEach(function (el) {
 				el.contentEditable = on ? 'true' : 'false';
 				el.style.outline = on ? '1px dashed #999' : '';
-				if (!on) el.removeAttribute('spellcheck'); // avoid persistent spellcheck if undesired
+				if (!on) el.removeAttribute('spellcheck');
 			});
 		}
 
@@ -66,9 +79,7 @@
 			editBtn.style.display = 'none';
 			saveBtn.style.display = 'inline-block';
 			cancelBtn.style.display = 'inline-block';
-			// focus first editable element for convenience
 			title.focus();
-			// place caret at end
 			if (window.getSelection && document.createRange) {
 				var range = document.createRange();
 				range.selectNodeContents(title);
@@ -113,7 +124,6 @@
 			title.innerHTML = title.dataset.original;
 			ing.innerHTML = ing.dataset.original;
 			instr.innerHTML = instr.dataset.original;
-			// if currently editing, exit edit mode
 			setEditable(false);
 			editBtn.style.display = 'inline-block';
 			saveBtn.style.display = 'none';
