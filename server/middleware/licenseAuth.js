@@ -2,6 +2,10 @@ const License = require('../models/License');
 
 module.exports = async function licenseAuth(req, res, next) {
   try {
+    console.log('[licenseAuth] cookies:', req.cookies);
+    console.log('[licenseAuth] x-license-key header:', req.get('x-license-key'));
+    console.log('[licenseAuth] query license:', req.query.license);
+
     // Allow open pages (index, license, styles, static assets)
     if (
       req.method === 'GET' &&
