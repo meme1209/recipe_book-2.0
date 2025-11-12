@@ -3,6 +3,8 @@ module.exports = function integrateLicense(app, express) {
   const cookieParser = require('cookie-parser');
   const licenseRoutes = require('./routes/licenseRoutes');
   const licenseAuth = require('./middleware/licenseAuth');
+  console.log('Checking license key:', req.body.licenseKey);
+
 
   // Parse cookies and JSON before license logic
   app.use(cookieParser());
