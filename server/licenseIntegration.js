@@ -1,17 +1,16 @@
-module.exports = function integrateLicense(app, express) {
-  const path = require('path');
-  const cookieParser = require('cookie-parser');
-  const licenseRoutes = require('./routes/licenseRoutes');
-  const licenseAuth = require('./middleware/licenseAuth');
+const cookieParser = require('cookie-parser');
+const licenseRoutes = require('./routes/licenseRoutes');
+const licenseAuth = require('./middleware/licenseAuth');
 
-  // Parse cookies and JSON before license logic
+module.exports = function licenseIntegration(app, express) {
+  // Parse cookies and JSON
   app.use(cookieParser());
   app.use(express.json());
 
-  // Expose license activation/creation endpoints before protection
-  app.use('/license', licenseRoutes);
+  // Mount license routes at /api/license
+  app.use('/api/license', licenseRoutes);
 
-  // Exclude static assets and common public files from license checks
+  // Exclude open paths from license checks
   const openPaths = [
     '/service-worker.js',
     '/manifest.json',
@@ -19,21 +18,19 @@ module.exports = function integrateLicense(app, express) {
     '/robots.txt'
   ];
 
-  // Handle all other routes and run license check
+  // License middleware for all other routes
   app.use((req, res, next) => {
-    const receivedLicense = req.headers['x-license-key'] || req.cookies?.license || 'none';
+    const receivedLicense = req.headers['x-license-key'] || req.cookies?.licenseKey || 'none';
     console.log('[licenseIntegration] Received license:', receivedLicense);
     console.log('[licenseIntegration] Request path:', req.path);
 
-    // Allow direct matches (manifest, service worker, etc.)
-    if (openPaths.includes(req.path)) {
-      console.log('[licenseIntegration] Open path, skipping license check');
-      return next();
-    }
-
-    // Allow requests for static files
-    if (req.path.startsWith('/assets/') || req.path.startsWith('/static/')) {
-      console.log('[licenseIntegration] Static file path, skipping license check');
+    // Skip license check for open/static paths
+    if (
+      openPaths.includes(req.path) ||
+      req.path.startsWith('/assets/') ||
+      req.path.startsWith('/static/')
+    ) {
+      console.log('[licenseIntegration] Open/static path, skipping license check');
       return next();
     }
 

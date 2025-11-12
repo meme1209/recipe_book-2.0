@@ -6,19 +6,18 @@
   <title>License Status</title>
   <link rel="stylesheet" href="/css/style.css" />
   <style>
-    /* minimal overrides if style.css missing */
     body { font-family: sans-serif; padding:24px; background:#f7f7f7; }
     .box { background:#fff; padding:18px; border-radius:6px; max-width:520px; margin:32px auto; box-shadow:0 6px 18px rgba(0,0,0,.06); }
     input, button { padding:8px; font-size:14px; }
     .msg { margin-top:12px; min-height:20px; }
-    .ok { color: #080; } 
-    .err { color:#b00; }
+    .ok { color: #080; }
+    .err { color: #b00; }
   </style>
 </head>
 <body>
   <div class="box" role="main">
-    <h2>License status</h2>
-    <p>This page lets you check whether the stored license key is valid (accessible without a license).</p>
+    <h2>License Status</h2>
+    <p>This page lets you check or save your license key.</p>
 
     <form id="licenseForm">
       <div>
@@ -48,44 +47,40 @@
     function clearCookie(name) {
       document.cookie = name + '=; path=/; max-age=0';
     }
-
     function setLicenseCookie(key) { setCookie('licenseKey', key); }
     function clearLicenseCookie() { clearCookie('licenseKey'); }
 
-    // --- Prefill input from cookie ---
     const input = document.getElementById('key');
     const msg = document.getElementById('message');
     const checkBtn = document.getElementById('check');
     const saveBtn = document.getElementById('save');
     const form = document.getElementById('licenseForm');
 
+    // Prefill input from cookie
     const existing = readCookie('licenseKey');
     if (existing) input.value = existing;
 
-    // --- Helper to read redirect query ---
+    // Get optional redirect query parameter
     function getRedirectParam() {
       try {
         const params = new URLSearchParams(window.location.search);
         const r = params.get('redirect');
         return r ? decodeURIComponent(r) : null;
-      } catch (e) {
-        return null;
-      }
+      } catch { return null; }
     }
     const redirectTarget = getRedirectParam();
 
-    // --- Verify license via backend ---
+    // Verify license via backend
     async function verifyKey(key) {
       try {
-        const res = await fetch('/api/license/verify', {
+        const res = await fetch('/license/verify', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'x-license-key': key },
           body: JSON.stringify({ key }),
           credentials: 'same-origin'
         });
         const body = await res.json().catch(() => null);
-        if (res.ok) return { ok:true, body };
-        return { ok:false, status: res.status, body };
+        return { ok: res.ok, body, status: res.status };
       } catch (e) {
         return { ok:false, error: e };
       }
@@ -101,11 +96,7 @@
         msg.textContent = 'Valid license. Details: ' + (r.body?.license ? JSON.stringify(r.body.license) : 'verified');
         msg.className = 'msg ok';
       } else {
-        if (r.status) {
-          msg.textContent = 'Server response: ' + (r.body?.error || 'invalid');
-        } else {
-          msg.textContent = 'Could not verify (network or endpoint missing).';
-        }
+        msg.textContent = r.status ? 'Server response: ' + (r.body?.error || 'invalid') : 'Could not verify (network or endpoint missing).';
         msg.className = 'msg err';
       }
     });
@@ -113,10 +104,9 @@
     // --- Save button ---
     saveBtn.addEventListener('click', () => {
       const key = input.value.trim();
-      if (!key) { msg.textContent = 'Please enter a license key to save.'; msg.className = 'msg err'; return; }
+      if (!key) { msg.textContent = 'Enter a key to save.'; msg.className = 'msg err'; return; }
       setLicenseCookie(key);
-      msg.textContent = 'Saved. Redirecting...';
-      msg.className = 'msg ok';
+      msg.textContent = 'Saved. Redirecting...'; msg.className = 'msg ok';
       setTimeout(() => {
         if (redirectTarget) location.href = redirectTarget;
         else location.reload();
@@ -128,22 +118,19 @@
       e.preventDefault();
       const key = input.value.trim();
       if (!key) { msg.textContent = 'Please enter a license key.'; msg.className = 'msg err'; return; }
-
       msg.textContent = 'Verifying...'; msg.className = 'msg';
       setLicenseCookie(key);
 
       const result = await verifyKey(key);
       if (result.ok) {
-        msg.textContent = 'License verified and saved. Redirecting...';
-        msg.className = 'msg ok';
+        msg.textContent = 'License verified and saved. Redirecting...'; msg.className = 'msg ok';
         setTimeout(() => {
           if (redirectTarget) location.href = redirectTarget;
           else location.reload();
         }, 700);
       } else {
         clearLicenseCookie();
-        msg.textContent = 'License invalid. Please try again.';
-        msg.className = 'msg err';
+        msg.textContent = 'License invalid. Please try again.'; msg.className = 'msg err';
       }
     });
   </script>
