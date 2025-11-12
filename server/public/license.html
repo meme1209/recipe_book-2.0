@@ -73,7 +73,7 @@
     // Verify license via backend
     async function verifyKey(key) {
       try {
-        const res = await fetch('/license/verify', {
+        const res = await fetch('/api/license/verify', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'x-license-key': key },
           body: JSON.stringify({ key }),
