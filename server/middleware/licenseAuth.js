@@ -20,6 +20,7 @@ module.exports = async function licenseAuth(req, res, next) {
         req.path === '/service-worker.js'
       )
     ) {
+      console.log('[licenseAuth] open path, skipping license check for', req.path);
       return next();
     }
 
@@ -30,7 +31,7 @@ module.exports = async function licenseAuth(req, res, next) {
       req.query.license;
 
     if (!key) {
-      console.debug('[licenseAuth] missing license key for', req.path);
+      console.warn('[licenseAuth] missing license key for', req.path);
 
       // If browser HTML GET, redirect user to license entry page
       if (req.method === 'GET' && req.accepts && req.accepts('html')) {
@@ -41,13 +42,14 @@ module.exports = async function licenseAuth(req, res, next) {
       return res.status(403).json({ error: 'license required' });
     }
 
-    // 🔍 Debug log — check if the cookie is actually received
-    console.debug('[licenseAuth] received license key:', key);
+    console.log('[licenseAuth] received license key:', key);
 
     // Lookup license in database
     const license = await License.findOne({ key });
+    console.log('[licenseAuth] license lookup result:', license);
+
     if (!license) {
-      console.debug('[licenseAuth] invalid license key for', req.path);
+      console.warn('[licenseAuth] invalid license key for', req.path);
       if (req.method === 'GET' && req.accepts && req.accepts('html')) {
         const redirectTo = encodeURIComponent(req.originalUrl || req.url || req.path);
         return res.redirect('/license.html?redirect=' + redirectTo);
@@ -56,24 +58,32 @@ module.exports = async function licenseAuth(req, res, next) {
     }
 
     // Check expiration
-    if (typeof license.isExpired === 'function' && license.isExpired()) {
-      console.debug('[licenseAuth] expired license', license.key);
-      if (req.method === 'GET' && req.accepts && req.accepts('html')) {
-        const redirectTo = encodeURIComponent(req.originalUrl || req.url || req.path);
-        return res.redirect('/license.html?redirect=' + redirectTo);
+    if (typeof license.isExpired === 'function') {
+      const expired = license.isExpired();
+      console.log('[licenseAuth] license.isExpired() result:', expired);
+      if (expired) {
+        console.warn('[licenseAuth] expired license', license.key);
+        if (req.method === 'GET' && req.accepts && req.accepts('html')) {
+          const redirectTo = encodeURIComponent(req.originalUrl || req.url || req.path);
+          return res.redirect('/license.html?redirect=' + redirectTo);
+        }
+        return res.status(403).json({ error: 'license expired' });
       }
-      return res.status(403).json({ error: 'license expired' });
     }
 
     // Auto-activate if not already activated
     if (!license.activated) {
+      console.log('[licenseAuth] license not activated, activating now:', license.key);
       license.activated = true;
       license.activatedAt = new Date();
       await license.save();
-      console.debug('[licenseAuth] activated license', license.key);
+      console.log('[licenseAuth] license activated:', license.key);
+    } else {
+      console.log('[licenseAuth] license already activated:', license.key);
     }
 
     req.license = license;
+    console.log('[licenseAuth] license verification passed for', license.key);
     next();
   } catch (err) {
     console.error('[licenseAuth] error:', err);
