@@ -3,8 +3,6 @@ module.exports = function integrateLicense(app, express) {
   const cookieParser = require('cookie-parser');
   const licenseRoutes = require('./routes/licenseRoutes');
   const licenseAuth = require('./middleware/licenseAuth');
-  console.log('Checking license key:', req.body.licenseKey);
-
 
   // Parse cookies and JSON before license logic
   app.use(cookieParser());
@@ -21,14 +19,18 @@ module.exports = function integrateLicense(app, express) {
     '/robots.txt'
   ];
 
+  // Handle all other routes and run license check
   app.use((req, res, next) => {
+    // ✅ Safe to reference req here
+    console.log('[licenseIntegration] Checking license key:', req.headers['x-license-key'] || req.cookies?.license || 'none');
+
     // Allow direct matches (manifest, service worker, etc.)
     if (openPaths.includes(req.path)) return next();
 
     // Allow requests for static files (like /assets/... or /static/...)
     if (req.path.startsWith('/assets/') || req.path.startsWith('/static/')) return next();
 
-    // Otherwise, run the license check
+    // Otherwise, run the license check middleware
     return licenseAuth(req, res, next);
   });
 };
