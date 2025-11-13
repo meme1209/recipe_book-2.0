@@ -5,7 +5,8 @@ const licenseAuth = require('../middleware/licenseAuth');
 
 // --- Activate a license key ---
 // POST /license/activate { key }
-router.post('/activate', licenseAuth, async (req, res, next) => {
+// ✅ Remove licenseAuth middleware here
+router.post('/activate', async (req, res, next) => {
   try {
     const { key } = req.body;
     if (!key) return res.status(400).json({ error: 'key required' });
@@ -14,17 +15,21 @@ router.post('/activate', licenseAuth, async (req, res, next) => {
     if (!license) return res.status(404).json({ error: 'license not found' });
     if (license.isExpired()) return res.status(403).json({ error: 'license expired' });
 
+    // Mark as activated
     license.activated = true;
     license.activatedAt = new Date();
     await license.save();
 
+    // Set cookie
     res.cookie('licenseKey', key, {
       httpOnly: true,
-      maxAge: license.expiresAt ? (license.expiresAt.getTime() - Date.now()) : 30 * 24 * 3600 * 1000
+      path: '/',
+      maxAge: license.expiresAt ? (license.expiresAt.getTime() - Date.now()) : 30 * 24 * 3600 * 1000,
+      sameSite: 'Lax',
+      secure: process.env.NODE_ENV === 'production'
     });
 
-    if (license.isAdmin) return res.json({ ok: true, admin: true, redirect: '/admin/setup' });
-    return res.json({ ok: true });
+    return res.json({ ok: true, license });
   } catch (err) {
     next(err);
   }
