@@ -1,11 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const License = require('../models/License');
-const licenseAuth = require('../middleware/licenseAuth');
 
-// --- Activate a license key ---
-// POST /license/activate { key }
-// ✅ Remove licenseAuth middleware here
+// --- Activate license ---
+// ✅ Do NOT apply licenseAuth here
 router.post('/activate', async (req, res, next) => {
   try {
     const { key } = req.body;
@@ -15,16 +13,14 @@ router.post('/activate', async (req, res, next) => {
     if (!license) return res.status(404).json({ error: 'license not found' });
     if (license.isExpired()) return res.status(403).json({ error: 'license expired' });
 
-    // Mark as activated
     license.activated = true;
     license.activatedAt = new Date();
     await license.save();
 
-    // Set cookie
     res.cookie('licenseKey', key, {
       httpOnly: true,
       path: '/',
-      maxAge: license.expiresAt ? (license.expiresAt.getTime() - Date.now()) : 30 * 24 * 3600 * 1000,
+      maxAge: license.expiresAt ? (license.expiresAt.getTime() - Date.now()) : 30*24*3600*1000,
       sameSite: 'Lax',
       secure: process.env.NODE_ENV === 'production'
     });
@@ -35,8 +31,7 @@ router.post('/activate', async (req, res, next) => {
   }
 });
 
-// --- Verify a license key ---
-// POST /license/verify { key }
+// --- Verify license ---
 router.post('/verify', async (req, res, next) => {
   try {
     const { key } = req.body;
@@ -52,8 +47,7 @@ router.post('/verify', async (req, res, next) => {
   }
 });
 
-// --- Create an admin license ---
-// POST /license/create-admin { secret }
+// --- Create admin license ---
 router.post('/create-admin', async (req, res, next) => {
   try {
     const secret = req.body?.secret;
@@ -61,7 +55,7 @@ router.post('/create-admin', async (req, res, next) => {
     if (!secret || secret !== process.env.ADMIN_CREATION_SECRET) return res.status(403).json({ error: 'forbidden' });
 
     const license = await License.generate({ isAdmin: true, days: 3650 });
-    return res.json({ ok: true, key: license.key });
+    return res.json({ ok:true, key: license.key });
   } catch (err) {
     next(err);
   }

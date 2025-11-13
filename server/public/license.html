@@ -17,7 +17,7 @@
 <body>
   <div class="box" role="main">
     <h2>License Status</h2>
-    <p>Check or activate your license key.</p>
+    <p>Check or save your license key below.</p>
 
     <form id="licenseForm">
       <div>
@@ -27,7 +27,7 @@
 
       <div style="margin-top:12px;">
         <button id="check" type="button">Check License</button>
-        <button id="activate" type="button">Activate License</button>
+        <button id="save" type="button">Save to cookie</button>
         <a href="/index.html" style="margin-left:8px;">Back</a>
       </div>
 
@@ -36,7 +36,6 @@
   </div>
 
   <script>
-    // --- Cookie helpers ---
     function readCookie(name) {
       const v = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
       return v ? decodeURIComponent(v.pop()) : '';
@@ -51,43 +50,26 @@
     const input = document.getElementById('key');
     const msg = document.getElementById('message');
     const checkBtn = document.getElementById('check');
-    const activateBtn = document.getElementById('activate');
+    const saveBtn = document.getElementById('save');
     const form = document.getElementById('licenseForm');
 
-    // Prefill input from cookie
     const existing = readCookie('licenseKey');
     if (existing) input.value = existing;
 
-    // Get redirect param
     function getRedirectParam() {
-      try {
-        const params = new URLSearchParams(window.location.search);
-        const r = params.get('redirect');
-        return r ? decodeURIComponent(r) : null;
-      } catch { return null; }
+      try { 
+        const params = new URLSearchParams(window.location.search); 
+        const r = params.get('redirect'); 
+        return r ? decodeURIComponent(r) : null; 
+      } catch { return null; } 
     }
     const redirectTarget = getRedirectParam();
 
-    // --- Verify license ---
-    async function verifyKey(key) {
-      try {
-        const res = await fetch('/api/license/verify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-license-key': key },
-          body: JSON.stringify({ key }),
-          credentials: 'same-origin'
-        });
-        const body = await res.json().catch(() => null);
-        return { ok: res.ok, body, status: res.status };
-      } catch (e) { return { ok:false, error:e }; }
-    }
-
-    // --- Activate license ---
     async function activateKey(key) {
       try {
-        const res = await fetch('/api/license/activate', {
+        const res = await fetch('/license/activate', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-license-key': key },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ key }),
           credentials: 'same-origin'
         });
@@ -96,41 +78,57 @@
       } catch (e) { return { ok:false, error:e }; }
     }
 
-    // --- Check button ---
+    async function verifyKey(key) {
+      try {
+        const res = await fetch('/license/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key }),
+          credentials: 'same-origin'
+        });
+        const body = await res.json().catch(() => null);
+        return { ok: res.ok, body, status: res.status };
+      } catch (e) { return { ok:false, error:e }; }
+    }
+
+    // Check license button
     checkBtn.addEventListener('click', async () => {
       const key = input.value.trim();
-      if (!key) { msg.textContent = 'Enter a key first.'; msg.className='msg err'; return; }
-      msg.textContent = 'Checking...'; msg.className='msg';
+      if (!key) { msg.textContent = 'Enter a key first.'; msg.className = 'msg err'; return; }
+      msg.textContent = 'Checking...'; msg.className = 'msg';
       const r = await verifyKey(key);
-      if (r.ok) {
-        msg.textContent = 'Valid license: ' + (r.body?.license ? JSON.stringify(r.body.license) : 'verified');
-        msg.className='msg ok';
+      if (r.ok) { 
+        msg.textContent = 'Valid license. Details: ' + JSON.stringify(r.body.license); 
+        msg.className = 'msg ok';
       } else {
-        msg.textContent = r.status ? 'Server response: ' + (r.body?.error||'invalid') : 'Could not verify.';
-        msg.className='msg err';
+        msg.textContent = r.status ? 'Server response: ' + (r.body?.error || 'invalid') : 'Could not verify.';
+        msg.className = 'msg err';
       }
     });
 
-    // --- Activate button ---
-    activateBtn.addEventListener('click', async () => {
+    // Save (activate) button
+    saveBtn.addEventListener('click', async () => {
       const key = input.value.trim();
-      if (!key) { msg.textContent='Enter a key to activate.'; msg.className='msg err'; return; }
-      msg.textContent='Activating...'; msg.className='msg';
+      if (!key) { msg.textContent = 'Enter a key first.'; msg.className = 'msg err'; return; }
+      msg.textContent = 'Activating...'; msg.className = 'msg';
       const r = await activateKey(key);
       if (r.ok) {
         setLicenseCookie(key);
-        msg.textContent='License activated! Redirecting...'; msg.className='msg ok';
-        setTimeout(() => { if (redirectTarget) location.href=redirectTarget; else location.href='/index.html'; }, 700);
+        msg.textContent = 'License activated and saved. Redirecting...'; 
+        msg.className = 'msg ok';
+        setTimeout(() => {
+          if (redirectTarget) location.href = redirectTarget;
+          else location.href = '/index.html';
+        }, 700);
       } else {
-        msg.textContent = r.status ? 'Server response: ' + (r.body?.error||'failed') : 'Activation failed.';
-        msg.className='msg err';
+        msg.textContent = r.status ? (r.body?.error || 'activation failed') : 'Could not activate.';
+        msg.className = 'msg err';
       }
     });
 
-    // --- Form submit (Enter key) ---
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      activateBtn.click(); // Activate on Enter
+      saveBtn.click();
     });
   </script>
 </body>
