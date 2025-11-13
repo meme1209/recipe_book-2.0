@@ -1,25 +1,82 @@
+// server/routes/recipeRoutes.js
 const express = require('express');
+const fs = require('fs');
+const path = require('path');
 const router = express.Router();
-const Recipe = require('../models/Recipe');
 const licenseAuth = require('../middleware/licenseAuth');
 
-// --- Create a new recipe (admin only) ---
+// ✅ Folder where new recipes will be saved as HTML
+const RECIPES_DIR = path.join(__dirname, '..', '..', 'recipes');
+const INDEX_PATH = path.join(__dirname, '..', '..', 'index.html');
+
+// --- Ensure recipes directory exists ---
+if (!fs.existsSync(RECIPES_DIR)) fs.mkdirSync(RECIPES_DIR, { recursive: true });
+
+// --- Add new recipe (Admins only) ---
 router.post('/', licenseAuth, async (req, res) => {
-  if (!req.license || !req.license.isAdmin)
-    return res.status(403).json({ error: 'Admin only' });
+  try {
+    if (!req.license?.isAdmin)
+      return res.status(403).json({ error: 'Admin only' });
 
-  const { title, content } = req.body;
-  if (!title || !content) return res.status(400).json({ error: 'Missing fields' });
+    const { title, category, ingredients, instructions } = req.body;
+    if (!title || !ingredients || !instructions)
+      return res.status(400).json({ error: 'Missing fields' });
 
-  const recipe = new Recipe({ title, content, createdAt: new Date() });
-  await recipe.save();
-  res.json(recipe);
+    // Create HTML file for recipe
+    const fileName = title.toLowerCase().replace(/\s+/g, '-') + '.html';
+    const filePath = path.join(RECIPES_DIR, fileName);
+
+    const html = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>${title}</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="recipe-container">
+    <h1>${title}</h1>
+    <h3>Category: ${category}</h3>
+    <h2>Ingredients</h2>
+    <ul>${ingredients.map(i => `<li>${i}</li>`).join('')}</ul>
+    <h2>Instructions</h2>
+    <p>${instructions.replace(/\n/g, '<br>')}</p>
+    <a href="/index.html">⬅ Back to Recipes</a>
+  </div>
+</body>
+</html>`;
+
+    fs.writeFileSync(filePath, html, 'utf8');
+
+    // --- Insert into index.html automatically ---
+    let index = fs.readFileSync(INDEX_PATH, 'utf8');
+    const newLink = `<a href="/recipes/${fileName}">${title}</a>`;
+
+    if (!index.includes(newLink)) {
+      index = index.replace(
+        '</body>',
+        `<div class="recipe-link">${newLink}</div>\n</body>`
+      );
+      fs.writeFileSync(INDEX_PATH, index, 'utf8');
+    }
+
+    console.log(`✅ Recipe "${title}" added successfully`);
+    res.json({ ok: true, file: `/recipes/${fileName}` });
+
+  } catch (err) {
+    console.error('❌ Error creating recipe:', err);
+    res.status(500).json({ error: 'Failed to create recipe' });
+  }
 });
 
-// --- Get all recipes ---
+// --- Get list of recipes (for future use) ---
 router.get('/', async (req, res) => {
-  const recipes = await Recipe.find().sort({ createdAt: -1 });
-  res.json(recipes);
+  try {
+    const files = fs.readdirSync(RECIPES_DIR).filter(f => f.endsWith('.html'));
+    res.json(files);
+  } catch (err) {
+    res.status(500).json({ error: 'Could not list recipes' });
+  }
 });
 
 module.exports = router;

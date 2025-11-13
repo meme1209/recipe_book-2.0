@@ -26,7 +26,7 @@ integrateLicense(app, express);
 app.use('/api/recipes', require('./routes/recipeRoutes'));
 
 // --- Serve static assets ---
-app.use(express.static(path.join(__dirname, '..')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // --- Admin route ---
 const License = require('./models/License');

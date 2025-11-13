@@ -1,67 +1,29 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Admin Dashboard</title>
-  <style>
-    body { font-family: sans-serif; background:#f7f7f7; padding:20px; }
-    .container { background:white; padding:20px; border-radius:8px; max-width:700px; margin:20px auto; box-shadow:0 2px 10px rgba(0,0,0,0.1); }
-    input, textarea, button { margin-top:8px; width:100%; padding:8px; }
-    h1 { text-align:center; }
-    .recipe { border-bottom:1px solid #ddd; padding:10px 0; }
-    .recipe:last-child { border-bottom:none; }
-  </style>
+  <meta charset="UTF-8">
+  <title>Admin Panel</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Admin Dashboard</h1>
+  <h1>Admin Control Panel</h1>
 
-    <h2>Add New Recipe</h2>
+  <section>
+    <h2>Add Recipe</h2>
     <form id="addForm">
-      <input type="text" id="title" placeholder="Recipe title" required />
-      <textarea id="content" placeholder="Recipe content..." required></textarea>
+      <input type="text" id="title" placeholder="Recipe Title" required><br>
+      <input type="text" id="type" placeholder="Category (e.g. Dessert)" required><br>
+      <textarea id="ingredients" placeholder="Ingredients (one per line)" required></textarea><br>
+      <textarea id="instructions" placeholder="Instructions (one per line)" required></textarea><br>
       <button type="submit">Add Recipe</button>
     </form>
+  </section>
 
-    <h2>Existing Recipes</h2>
-    <div id="recipeList">Loading...</div>
-  </div>
+  <section>
+    <h2>Manage Recipes</h2>
+    <ul id="recipeList"></ul>
+  </section>
 
-  <script>
-    async function loadRecipes() {
-      const res = await fetch('/api/recipes');
-      const data = await res.json();
-      const container = document.getElementById('recipeList');
-      container.innerHTML = '';
-      data.forEach(r => {
-        const div = document.createElement('div');
-        div.className = 'recipe';
-        div.innerHTML = `<strong>${r.title}</strong><br>${r.content.slice(0,100)}...`;
-        container.appendChild(div);
-      });
-    }
-
-    document.getElementById('addForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const title = document.getElementById('title').value.trim();
-      const content = document.getElementById('content').value.trim();
-      if (!title || !content) return alert('Both fields required');
-      const res = await fetch('/api/recipes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, content })
-      });
-      if (res.ok) {
-        alert('Recipe added!');
-        document.getElementById('addForm').reset();
-        loadRecipes();
-      } else {
-        alert('Failed to add recipe.');
-      }
-    });
-
-    loadRecipes();
-  </script>
+  <script src="js/admin.js"></script>
 </body>
 </html>
