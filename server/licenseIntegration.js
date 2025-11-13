@@ -1,5 +1,5 @@
 const cookieParser = require('cookie-parser');
-const licenseRoutes = require('./routes/licenseroutes'); // note lowercase filename
+const licenseRoutes = require('./routes/licenseRoutes'); // note lowercase filename
 const licenseAuth = require('./middleware/licenseAuth');
 
 module.exports = function licenseIntegration(app, express) {
