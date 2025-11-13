@@ -18,15 +18,15 @@ mongoose.connect(process.env.MONGO_URI, {
 .then(() => console.log('✅ Connected to MongoDB'))
 .catch(err => console.error('❌ MongoDB connection error:', err));
 
-// --- Integrate license logic ---
-const integrateLicense = require('./licenseIntegration');
-integrateLicense(app, express);
+// --- Serve static assets FIRST ---
+app.use(express.static(path.join(__dirname, 'public')));
 
 // --- Recipe API routes ---
 app.use('/api/recipes', require('./routes/recipeRoutes'));
 
-// --- Serve static assets ---
-app.use(express.static(path.join(__dirname, 'public')));
+// --- Integrate license logic (AFTER static files) ---
+const integrateLicense = require('./licenseIntegration');
+integrateLicense(app, express);
 
 // --- Admin route ---
 const License = require('./models/License');
@@ -47,7 +47,7 @@ app.get('/admin', async (req, res) => {
     }
 
     // ✅ Serve the admin homepage
-    res.sendFile(path.join(__dirname, '..', 'admin.html'));
+    res.sendFile(path.join(__dirname, 'public', 'admin.html'));
   } catch (err) {
     console.error('Error checking admin license:', err);
     res.status(500).send('Server error');
@@ -56,7 +56,7 @@ app.get('/admin', async (req, res) => {
 
 // --- Simple index route ---
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // --- Start server ---
