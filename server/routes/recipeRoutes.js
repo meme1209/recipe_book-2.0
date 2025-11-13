@@ -6,8 +6,8 @@ const router = express.Router();
 const licenseAuth = require('../middleware/licenseAuth');
 
 // ✅ Folder where new recipes will be saved as HTML
-const RECIPES_DIR = path.join(__dirname, '..', '..', 'recipes');
-const INDEX_PATH = path.join(__dirname, '..', '..', 'index.html');
+const RECIPES_DIR = path.join(__dirname, '..', 'public', 'recipes');
+const INDEX_PATH = path.join(__dirname, '..', 'public', 'index.html');
 
 // --- Ensure recipes directory exists ---
 if (!fs.existsSync(RECIPES_DIR)) fs.mkdirSync(RECIPES_DIR, { recursive: true });
@@ -38,7 +38,7 @@ router.post('/', licenseAuth, async (req, res) => {
     <h1>${title}</h1>
     <h3>Category: ${category}</h3>
     <h2>Ingredients</h2>
-    <ul>${ingredients.map(i => `<li>${i}</li>`).join('')}</ul>
+    <ul>${ingredients.split('\n').map(i => `<li>${i.trim()}</li>`).join('')}</ul>
     <h2>Instructions</h2>
     <p>${instructions.replace(/\n/g, '<br>')}</p>
     <a href="/index.html">⬅ Back to Recipes</a>
