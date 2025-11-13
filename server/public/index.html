@@ -35,8 +35,7 @@
   <script>
     // set cookie helper
     function setLicenseCookie(key) {
-      // 1 year expiry
-      document.cookie = 'licenseKey=' + encodeURIComponent(key) + '; path=/; max-age=' + (60*60*24*365);
+    document.cookie = 'licenseKey=' + encodeURIComponent(key) + '; path=/; max-age=' + (60*60*24*365) + '; SameSite=Lax';
     }
     function clearLicenseCookie() {
       document.cookie = 'licenseKey=; path=/; max-age=0';

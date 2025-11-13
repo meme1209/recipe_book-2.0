@@ -3,152 +3,96 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>License Status</title>
+  <title>License Activation</title>
   <link rel="stylesheet" href="/css/style.css" />
   <style>
-    /* minimal overrides if style.css missing */
     body { font-family: sans-serif; padding:24px; background:#f7f7f7; }
     .box { background:#fff; padding:18px; border-radius:6px; max-width:520px; margin:32px auto; box-shadow:0 6px 18px rgba(0,0,0,.06); }
     input, button { padding:8px; font-size:14px; }
     .msg { margin-top:12px; min-height:20px; }
-    .ok { color: #080; } .err { color:#b00; }
+    .ok { color:#080; } 
+    .err { color:#b00; }
   </style>
 </head>
 <body>
   <div class="box" role="main">
-    <h2>License status</h2>
-    <p>Enter Your License Key To Enter.</p>
+    <h2>License Activation</h2>
+    <p>Enter your license key to activate your access.</p>
 
-    <div>
-      <label for="key">License key</label><br/>
-      <input id="key" type="text" placeholder="Enter or paste license key" style="width:100%" />
-    </div>
+    <form id="licenseForm">
+      <div>
+        <label for="key">License key</label><br/>
+        <input id="key" type="text" placeholder="Enter or paste license key" style="width:100%" />
+      </div>
 
-    <div style="margin-top:12px;">
-      <button id="check">Check License</button>
-      <button id="save">Save to cookie</button>
-      <a href="/index.html" style="margin-left:8px;">Back</a>
-    </div>
+      <div style="margin-top:12px;">
+        <button id="save" type="button">Activate & Save</button>
+        <a href="/index.html" style="margin-left:8px;">Back</a>
+      </div>
 
-    <div id="message" class="msg" aria-live="polite"></div>
+      <div id="message" class="msg" aria-live="polite"></div>
+    </form>
   </div>
 
   <script>
-    function readCookie(name) {
-      const v = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
-      return v ? decodeURIComponent(v.pop()) : '';
-    }
-    function setCookie(name, val) {
-      document.cookie = name + '=' + encodeURIComponent(val) + '; path=/; max-age=' + (60*60*24*365);
-    }
-    function clearCookie(name) {
-      document.cookie = name + '=; path=/; max-age=0';
-    }
-
     const input = document.getElementById('key');
-    const msg = document.getElementById('message');
-    const checkBtn = document.getElementById('check');
     const saveBtn = document.getElementById('save');
+    const msg = document.getElementById('message');
+    const form = document.getElementById('licenseForm');
 
-    // prefill from cookie if available
-    const existing = readCookie('licenseKey');
-    if (existing) input.value = existing;
+    // --- Prefill from cookie (if accessible, optional)
+    const existing = document.cookie.match(/(^|;)\\s*licenseKey\\s*=\\s*([^;]+)/);
+    if (existing) input.value = decodeURIComponent(existing.pop());
 
-    async function verifyKey(key) {
+    // --- Get redirect query
+    function getRedirectParam() {
       try {
-        const res = await fetch('/api/license/verify', {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('redirect') ? decodeURIComponent(params.get('redirect')) : '/index.html';
+      } catch (e) { return '/index.html'; }
+    }
+    const redirectTarget = getRedirectParam();
+
+    // --- Call backend to activate license ---
+    async function activateLicense(key) {
+      try {
+        const res = await fetch('/license/activate', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-license-key': key },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ key }),
           credentials: 'same-origin'
         });
-        const body = await res.json().catch(()=>null);
-        if (res.ok) return { ok:true, body };
-        return { ok:false, status: res.status, body };
+        return res.json();
       } catch (e) {
-        return { ok:false, error: e };
+        return { ok: false, error: e.message || 'Network error' };
       }
     }
 
-    checkBtn.addEventListener('click', async () => {
+    // --- Save button click ---
+    saveBtn.addEventListener('click', async () => {
       const key = input.value.trim();
-      if (!key) { msg.textContent = 'Enter a key first.'; msg.className = 'msg err'; return; }
-      msg.textContent = 'Checking...'; msg.className = 'msg';
-      const r = await verifyKey(key);
-      if (r.ok) {
-        msg.textContent = 'Valid license. Details: ' + (r.body && r.body.license ? JSON.stringify(r.body.license) : 'verified');
+      if (!key) { msg.textContent = 'Please enter a license key.'; msg.className = 'msg err'; return; }
+
+      msg.textContent = 'Activating license...';
+      msg.className = 'msg';
+
+      const result = await activateLicense(key);
+      if (result.ok) {
+        msg.textContent = 'License activated! Redirecting...';
         msg.className = 'msg ok';
+        setTimeout(() => {
+          location.href = redirectTarget;
+        }, 500);
       } else {
-        if (r.status) {
-          msg.textContent = 'Server response: ' + (r.body && r.body.error ? r.body.error : 'invalid');
-        } else {
-          msg.textContent = 'Could not verify (network or endpoint missing).';
-        }
+        msg.textContent = 'Activation failed: ' + (result.error || 'unknown error');
         msg.className = 'msg err';
       }
     });
 
-    // Helper to read ?redirect=... and return decoded value or null
-    function getRedirectParam() {
-      try {
-        const params = new URLSearchParams(window.location.search);
-        const r = params.get('redirect');
-        return r ? decodeURIComponent(r) : null;
-      } catch (e) {
-        return null;
-      }
-    }
-
-    const redirectTarget = getRedirectParam();
-
-    form.addEventListener('submit', async (e) => {
+    // --- Enter key submits form ---
+    form.addEventListener('submit', e => {
       e.preventDefault();
-      const key = input.value.trim();
-      if (!key) {
-        msg.textContent = 'Please enter a license key.';
-        msg.className = 'msg error';
-        return;
-      }
-
-      msg.textContent = 'Verifying...';
-      msg.className = 'msg';
-
-      setLicenseCookie(key);
-
-      const result = await tryVerify(key);
-      if (result.ok) {
-        msg.textContent = 'License verified and saved. Redirecting...';
-        msg.className = 'msg success';
-        setTimeout(()=> {
-          if (redirectTarget) location.href = redirectTarget;
-          else location.reload();
-        }, 700);
-      } else {
-        if (result.error) {
-          msg.textContent = 'Saved locally. If verification is needed, the app will validate the key on next request.';
-          msg.className = 'msg';
-          setTimeout(()=> {
-            if (redirectTarget) location.href = redirectTarget;
-            else location.reload();
-          }, 700);
-        } else {
-          clearLicenseCookie();
-          msg.textContent = 'License invalid. Please try again.';
-          msg.className = 'msg error';
-        }
-      }
-    });
-
-    saveBtn.addEventListener('click', () => {
-      const key = input.value.trim();
-      if (!key) { msg.textContent = 'Please enter a license key to save.'; msg.className = 'msg error'; return; }
-      setLicenseCookie(key);
-      msg.textContent = 'Saved. Redirecting...';
-      msg.className = 'msg success';
-      setTimeout(()=> {
-        if (redirectTarget) location.href = redirectTarget;
-        else location.reload();
-      }, 500);
+      saveBtn.click();
     });
   </script>
 </body>
