@@ -1,121 +1,123 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Enter License</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="manifest" href="manifest.json" />
+  <title>CookBook</title>
   <style>
-    body { font-family: sans-serif; display:flex; align-items:center; justify-content:center; height:100vh; margin:0; background:#f7f7f7; }
-    .card { background:#fff; padding:24px; border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,.08); width:320px; }
-    label { display:block; margin-bottom:8px; font-weight:600; }
-    input[type="text"] { width:100%; padding:8px; margin-bottom:12px; box-sizing:border-box; }
-    button { padding:8px 12px; margin-right:8px; }
-    .msg { margin-top:12px; min-height:20px; color:#333; }
-    .error { color:#b00; }
-    .success { color:#080; }
+    /* small helper to ensure the button is visible if your main stylesheet is missing */
+    #licenseButton { position:absolute; right:12px; top:12px; padding:6px 10px; background:#007acc; color:#fff; border-radius:4px; text-decoration:none; font-size:13px; }
+    header { position:relative; padding-left:0px; padding-right:18px; padding-top:18px; padding-bottom:18px; }
   </style>
+
 </head>
 <body>
-  <div class="card" role="main">
-    <h2>Verify your license</h2>
-    <p>Enter your license key to unlock the app. This page is accessible without a license.</p>
+  <header>
+    <h1>CookBook</h1>
+    <a id="licenseButton" href="/license.html">License</a>
+    <p>Your recipe collection</p>
+  </header>
 
-    <form id="licenseForm">
-      <label for="licenseKey">License key</label>
-      <input id="licenseKey" name="licenseKey" type="text" autocomplete="off" placeholder="XXXX-XXXX-XXXX" />
-      <div>
-        <button id="verifyBtn" type="submit">Verify & Save</button>
-        <button id="saveBtn" type="button">Save Only</button>
-      </div>
-    </form>
+  <main>
+    <section>
+        <h2>Search Recipes</h2>
+        <input type="text" id="SearchInput" placeholder="Type to search..." autocomplete="off" />
+        <ul id="searchResults" class="hidden"></ul>
+    </section>
+    <section>
+      <h2>Sides</h2>
+      <ul>
+        <li><a href="recipes/Coleslaw.html">Coleslaw</a></li>
+        <li><a href="recipes/Garlic-Bread.html">Garlic Bread</a></li>
+        <li><a href="recipes/Mashed-Potatoes.html">Mashed Potatoes</a></li>
+      </ul>
+    </section>
 
-    <div class="msg" id="message" aria-live="polite"></div>
-  </div>
+    <section>
+      <h2>Main Dishes</h2>
+      <ul>
+        <li><a href="recipes/chili.html">Chili</a></li>
+        <li><a href="recipes/lasagna.html">Lasagna</a></li>
+        <li><a href="recipes/Stir-Fry.html">Stir Fry</a></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Desserts</h2>
+      <ul>
+        <li><a href="recipes/Apple-Pie.html">Apple Pie</a></li>
+        <li><a href="recipes/Brownies.html">Brownies</a></li>
+        <li><a href="recipes/Ice-Cream.html">Ice Cream</a></li>
+        <li><a href="recipes/Three-Layer-Rhubarb-Dessert.html">Three Layer Rhubarb Dessert</a></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Breakfast</h2>
+      <ul>
+        <li><a href="recipes/French-Toast.html">French Toast</a></li>
+        <li><a href="recipes/pancakes.html">Pancakes</a></li>
+        <li><a href="recipes/Scrambled-Eggs.html">Scrambled Eggs</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 CookBook</p>
+  </footer>
 
   <script>
-    // set cookie helper
-    function setLicenseCookie(key) {
-    document.cookie = 'licenseKey=' + encodeURIComponent(key) + '; path=/; max-age=' + (60*60*24*365) + '; SameSite=Lax';
-    }
-    function clearLicenseCookie() {
-      document.cookie = 'licenseKey=; path=/; max-age=0';
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
     }
 
-    const form = document.getElementById('licenseForm');
-    const input = document.getElementById('licenseKey');
-    const msg = document.getElementById('message');
-    const saveBtn = document.getElementById('saveBtn');
+    const searchInput = document.getElementById('SearchInput');
+    const searchResults = document.getElementById('searchResults');
 
-    // Try to use a backend verify endpoint if available; otherwise saving cookie is still useful
-    async function tryVerify(key) {
-      // This endpoint is optional — if your server exposes a verify route adjust the path accordingly.
-      const url = '/api/license/verify';
-      try {
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-license-key': key
-          },
-          body: JSON.stringify({ key }),
-          credentials: 'same-origin'
-        });
-        return { ok: res.ok, status: res.status, body: await (res.json().catch(()=>null)) };
-      } catch (e) {
-        // network error or endpoint not present
-        return { ok: false, error: e };
-      }
-    }
+    const recipes = [
+      { name: "Apple Pie", url: "recipes/apple-pie.html" },
+      { name: "Brownies", url: "recipes/brownies.html" },
+      { name: "Chili", url: "recipes/chili.html" },
+      { name: "Coleslaw", url: "recipes/coleslaw.html" },
+      { name: "French Toast", url: "recipes/french-toast.html" },
+      { name: "Garlic Bread", url: "recipes/garlic-bread.html" },
+      { name: "Ice Cream", url: "recipes/ice-cream.html" },
+      { name: "Lasagna", url: "recipes/lasagna.html" },
+      { name: "Mashed Potatoes", url: "recipes/mashed-potatoes.html" },
+      { name: "Pancakes", url: "recipes/pancakes.html" },
+      { name: "Scrambled Eggs", url: "recipes/scrambled-eggs.html" },
+      { name: "Stir Fry", url: "recipes/stir-fry.html" }
+    ];
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const key = input.value.trim();
-      if (!key) {
-        msg.textContent = 'Please enter a license key.';
-        msg.className = 'msg error';
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.toLowerCase();
+      searchResults.innerHTML = '';
+      if (query === '') {
+        searchResults.classList.add('hidden');
         return;
       }
 
-      msg.textContent = 'Verifying...';
-      msg.className = 'msg';
+      const matches = recipes.filter(recipe =>
+        recipe.name.toLowerCase().includes(query)
+      );
 
-      setLicenseCookie(key);
-
-      const result = await tryVerify(key);
-      if (result.ok) {
-        msg.textContent = 'License verified and saved. Reloading...';
-        msg.className = 'msg success';
-        setTimeout(()=> location.reload(), 900);
+      if (matches.length === 0) {
+        searchResults.innerHTML = '<li>No results found</li>';
       } else {
-        // If verify endpoint doesn't exist or returned error, still leave the cookie and suggest reloading.
-        if (result.error) {
-          msg.textContent = 'Saved locally. If verification is needed, the app will validate the key on next request.';
-          msg.className = 'msg';
-          setTimeout(()=> location.reload(), 900);
-        } else {
-          // server responded but not ok (invalid license)
-          clearLicenseCookie();
-          msg.textContent = 'License invalid. Please try again.';
-          msg.className = 'msg error';
-        }
+        matches.forEach(recipe => {
+          const li = document.createElement('li');
+          const link = document.createElement('a');
+          link.href = recipe.url;
+          link.textContent = recipe.name;
+          li.appendChild(link);
+          searchResults.appendChild(li);
+        });
       }
-    });
 
-    saveBtn.addEventListener('click', () => {
-      const key = input.value.trim();
-      if (!key) {
-        msg.textContent = 'Please enter a license key to save.';
-        msg.className = 'msg error';
-        return;
-      }
-      setLicenseCookie(key);
-      msg.textContent = 'Saved. Reloading...';
-      msg.className = 'msg success';
-      setTimeout(()=> location.reload(), 700);
+      searchResults.classList.remove('hidden');
     });
-
-    // usability: focus input on load
-    input.focus();
   </script>
 </body>
 </html>
