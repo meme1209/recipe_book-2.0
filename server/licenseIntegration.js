@@ -1,35 +1,57 @@
 const cookieParser = require('cookie-parser');
-const licenseRoutes = require('./routes/licenseRoutes'); // note lowercase filename
+const licenseRoutes = require('./routes/licenseRoutes');
 const licenseAuth = require('./middleware/licenseAuth');
 
 module.exports = function licenseIntegration(app, express) {
+  
+  // Parse cookies & JSON ONCE
   app.use(cookieParser());
   app.use(express.json());
 
-  // 1️⃣ Mount license routes first — activate & verify
-  app.use('/license', licenseRoutes);
+  // 1️⃣ License activation routes — must be FIRST
+  app.use('/api/license', licenseRoutes);
 
-  // 2️⃣ Apply licenseAuth middleware for all other routes
+  // 2️⃣ Paths that NEVER require a license (only what's necessary)
+  const ALWAYS_ALLOWED = [
+    '/license.html',
+    '/api/license/activate',
+    '/api/license/verify',
+    '/manifest.json',
+    '/service-worker.js',
+    '/favicon.ico',
+    '/'
+  ];
+
   app.use((req, res, next) => {
-    const receivedLicense = req.headers['x-license-key'] || req.cookies?.licenseKey || 'none';
-    console.log('[licenseIntegration] Received license:', receivedLicense);
-    console.log('[licenseIntegration] Request path:', req.path);
+    const path = req.path;
 
-    const openPaths = [
-      '/service-worker.js',
-      '/manifest.json',
-      '/favicon.ico',
-      '/robots.txt',
-      '/license.html',
-      '/',
-      '/index.html'
-    ];
+    console.log('[licenseIntegration] Checking path:', path);
 
-    if (openPaths.includes(req.path) || req.path.endsWith('style.css') || req.path.startsWith('/assets/') || req.path.startsWith('/static/')) {
-      console.log('[licenseIntegration] Open/static path, skipping license check');
+    // A — Always allow activation/verify & license.html
+    if (ALWAYS_ALLOWED.includes(path)) {
       return next();
     }
 
+    // B — Allow static files (CSS/JS/images/fonts)
+    if (
+      path.startsWith('/css/') ||
+      path.startsWith('/js/') ||
+      path.startsWith('/images/') ||
+      path.startsWith('/recipes/') ||
+      path.endsWith('.css') ||
+      path.endsWith('.js') ||
+      path.endsWith('.png') ||
+      path.endsWith('.jpg') ||
+      path.endsWith('.jpeg') ||
+      path.endsWith('.gif') ||
+      path.endsWith('.svg') ||
+      path.endsWith('.woff') ||
+      path.endsWith('.woff2')
+    ) {
+      return next();
+    }
+
+    // C — Everything else requires a valid license
     return licenseAuth(req, res, next);
   });
 };

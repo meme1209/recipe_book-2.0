@@ -18,17 +18,14 @@ mongoose.connect(process.env.MONGO_URI, {
 .then(() => console.log('✅ Connected to MongoDB'))
 .catch(err => console.error('❌ MongoDB connection error:', err));
 
-// --- Serve static assets FIRST ---
-app.use(express.static(path.join(__dirname, 'public')));
-
-// --- Recipe API routes ---
-app.use('/api/recipes', require('./routes/recipeRoutes'));
-
-// --- Integrate license logic (AFTER static files) ---
+// --- Integrate license routes (activate + verify) ---
 const integrateLicense = require('./licenseIntegration');
 integrateLicense(app, express);
 
-// --- Admin route ---
+// --- Recipe API routes (must be BEFORE static so licenseAuth protects them) ---
+app.use('/api/recipes', require('./routes/recipeRoutes'));
+
+// --- Admin route (protected) ---
 const License = require('./models/License');
 app.get('/admin', async (req, res) => {
   try {
@@ -46,7 +43,7 @@ app.get('/admin', async (req, res) => {
       return res.status(403).send('Access denied: Admin license required');
     }
 
-    // ✅ Serve the admin homepage
+    // Serve admin page from public folder
     res.sendFile(path.join(__dirname, 'public', 'admin.html'));
   } catch (err) {
     console.error('Error checking admin license:', err);
@@ -54,7 +51,10 @@ app.get('/admin', async (req, res) => {
   }
 });
 
-// --- Simple index route ---
+// --- Serve static assets (public folder) ---
+app.use(express.static(path.join(__dirname, 'public')));
+
+// --- Default index route ---
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
