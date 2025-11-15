@@ -2,56 +2,45 @@ const cookieParser = require('cookie-parser');
 const licenseRoutes = require('./routes/licenseRoutes');
 const licenseAuth = require('./middleware/licenseAuth');
 
-module.exports = function licenseIntegration(app, express) {
-  
-  // Parse cookies & JSON ONCE
+module.exports = function integrateLicense(app, express) {
+
   app.use(cookieParser());
   app.use(express.json());
 
-  // 1️⃣ License activation routes — must be FIRST
-  app.use('/api/license', licenseRoutes);
+  // 1️⃣ License activation + verify API
+  app.use('/license', licenseRoutes);
 
-  // 2️⃣ Paths that NEVER require a license (only what's necessary)
-  const ALWAYS_ALLOWED = [
+  // 2️⃣ Allowed without license
+  const OPEN = [
     '/license.html',
-    '/api/license/activate',
-    '/api/license/verify',
-    '/manifest.json',
-    '/service-worker.js',
-    '/favicon.ico',
-    '/'
+    '/license/activate',
+    '/license/verify',
+    '/license/remove',
   ];
 
   app.use((req, res, next) => {
-    const path = req.path;
+    const p = req.path;
+    console.log('[LicenseIntegration] Checking path:', p);
 
-    console.log('[licenseIntegration] Checking path:', path);
+    // --- Allow OPEN routes
+    if (OPEN.includes(p)) return next();
 
-    // A — Always allow activation/verify & license.html
-    if (ALWAYS_ALLOWED.includes(path)) {
-      return next();
-    }
-
-    // B — Allow static files (CSS/JS/images/fonts)
+    // --- Allow static assets required for license.html
     if (
-      path.startsWith('/css/') ||
-      path.startsWith('/js/') ||
-      path.startsWith('/images/') ||
-      path.startsWith('/recipes/') ||
-      path.endsWith('.css') ||
-      path.endsWith('.js') ||
-      path.endsWith('.png') ||
-      path.endsWith('.jpg') ||
-      path.endsWith('.jpeg') ||
-      path.endsWith('.gif') ||
-      path.endsWith('.svg') ||
-      path.endsWith('.woff') ||
-      path.endsWith('.woff2')
+      p.startsWith('/css/') ||
+      p.startsWith('/js/') ||
+      p.startsWith('/images/') ||
+      p.endsWith('.css') ||
+      p.endsWith('.js') ||
+      p.endsWith('.png') ||
+      p.endsWith('.jpg') ||
+      p.endsWith('.jpeg') ||
+      p.endsWith('.svg')
     ) {
       return next();
     }
 
-    // C — Everything else requires a valid license
+    // --- Everything else requires license
     return licenseAuth(req, res, next);
   });
 };
