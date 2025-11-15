@@ -79,4 +79,28 @@ router.get('/', async (req, res) => {
   }
 });
 
+// DELETE /api/recipes/:slug  (it will remove the file and remove the index link)
+router.delete('/:slug', licenseAuth, (req, res) => {
+  try {
+    if (!req.license?.isAdmin) return res.status(403).json({ error: 'Admin only' });
+
+    const slug = req.params.slug;
+    const fileName = slug.endsWith('.html') ? slug : `${slug}.html`;
+    const filePath = path.join(RECIPES_DIR, fileName);
+
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+
+    // remove link from index.html: remove occurrences of href="/recipes/<fileName>"
+    let indexHtml = fs.readFileSync(INDEX_PATH, 'utf8');
+    const regex = new RegExp(`<a[^>]*href=["']?/recipes/${fileName}["'][^>]*>.*?<\\/a>\\s*`, 'gi');
+    indexHtml = indexHtml.replace(regex, '');
+    fs.writeFileSync(INDEX_PATH, indexHtml, 'utf8');
+
+    return res.json({ ok: true });
+  } catch (err) {
+    console.error('Error deleting recipe:', err);
+    return res.status(500).json({ error: 'Failed to delete' });
+  }
+});
+
 module.exports = router;
