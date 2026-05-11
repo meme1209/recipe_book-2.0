@@ -204,6 +204,7 @@ const recipeCategories = [
     recipes: [
       { name: "Iced Cappuccino", url: "recipes/Drinks/Iced Cappuccino.html" },
       { name: "Irish Cream", url: "recipes/Drinks/Irish Cream.html" },
+      { name: "Peach Ginger Spritz", url: "recipes/Drinks/Peach Ginger Spritz.html" },
       { name: "Rhubarb Slush", url: "recipes/Drinks/Rhubarb Slush.html" },
       { name: "Slush", url: "recipes/Drinks/Slush.html" },
     ]
