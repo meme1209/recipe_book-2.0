@@ -4,26 +4,8 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="77767bf1-0f3b-468c-b7ef-702dfa1962ec" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/server/public/js/recipe-data.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/public/update_recipe_index.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
+    <list default="true" id="77767bf1-0f3b-468c-b7ef-702dfa1962ec" name="Changes" comment="add recipes">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/server/public/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/public/recipes/Apple-Pie.html" beforeDir="false" afterPath="$PROJECT_DIR$/server/public/recipes/Desserts/Apple-Pie.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/public/recipes/Brownies.html" beforeDir="false" afterPath="$PROJECT_DIR$/server/public/recipes/Desserts/Brownies.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/public/recipes/Coleslaw.html" beforeDir="false" afterPath="$PROJECT_DIR$/server/public/recipes/Sides/Coleslaw.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/public/recipes/French-Toast.html" beforeDir="false" afterPath="$PROJECT_DIR$/server/public/recipes/Breakfast/French-Toast.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/public/recipes/Garlic-Bread.html" beforeDir="false" afterPath="$PROJECT_DIR$/server/public/recipes/Sides/Garlic-Bread.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/public/recipes/Ice-Cream.html" beforeDir="false" afterPath="$PROJECT_DIR$/server/public/recipes/Desserts/Ice-Cream.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/public/recipes/Mashed-Potatoes.html" beforeDir="false" afterPath="$PROJECT_DIR$/server/public/recipes/Sides/Mashed-Potatoes.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/public/recipes/Scrambled-Eggs.html" beforeDir="false" afterPath="$PROJECT_DIR$/server/public/recipes/Breakfast/Scrambled-Eggs.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/public/recipes/Stir-Fry.html" beforeDir="false" afterPath="$PROJECT_DIR$/server/public/recipes/Main Dishes/Stir-Fry.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/public/recipes/Three-Layer-Rhubarb-Dessert.html" beforeDir="false" afterPath="$PROJECT_DIR$/server/public/recipes/Desserts/Three-Layer-Rhubarb-Dessert.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/public/recipes/chili.html" beforeDir="false" afterPath="$PROJECT_DIR$/server/public/recipes/Main Dishes/chili.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/public/recipes/lasagna.html" beforeDir="false" afterPath="$PROJECT_DIR$/server/public/recipes/Main Dishes/lasagna.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/public/recipes/pancakes.html" beforeDir="false" afterPath="$PROJECT_DIR$/server/public/recipes/Breakfast/pancakes.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,20 +26,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Robot welder/Documents/recipe-book&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/Robot welder/Documents/recipe-book/server/public/recipes/Breakfast"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Robot welder\Documents\recipe-book\server\public\recipes\Breakfast" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\Robot welder\Documents\recipe-book\server\public\recipes\Breakfast" />
       <recent name="C:\Users\Robot welder\Documents\recipe-book\server\public\recipes\Sides" />
@@ -74,6 +59,30 @@
       <option name="presentableId" value="Default" />
       <updated>1763774857965</updated>
     </task>
+    <task id="LOCAL-00001" summary="add recipes">
+      <option name="closed" value="true" />
+      <created>1778207433321</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1778207433321</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="add recipes" />
+    <option name="LAST_COMMIT_MESSAGE" value="add recipes" />
   </component>
 </project>
