@@ -1,0 +1,14 @@
+{
+  "test-recipe": {
+    "total": 8,
+    "count": 2
+  },
+  "test123": {
+    "total": 5,
+    "count": 1
+  },
+  "bacon-potato-pancakes": {
+    "total": 4,
+    "count": 1
+  }
+}

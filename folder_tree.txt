@@ -1,0 +1,436 @@
+recipe-book
+├── admin.html
+├── css
+├── data
+│   └── recipes.json
+├── folder_tree.py
+├── index.html
+├── index.js
+├── js
+├── license.html
+├── manifest.json
+├── package-lock.json
+├── package.json
+├── recipes
+├── server
+│   ├── app.js
+│   ├── data
+│   │   └── ratings.json
+│   ├── licenseIntegration.js
+│   ├── middleware
+│   │   ├── licenseAuth.js
+│   │   ├── requireLicense.js
+│   │   └── verifyLicense.js
+│   ├── models
+│   │   ├── License.js
+│   │   └── Recipe.js
+│   ├── public
+│   │   ├── admin.html
+│   │   ├── css
+│   │   │   └── style.css
+│   │   ├── index.html
+│   │   ├── js
+│   │   │   ├── admin.js
+│   │   │   ├── app.js
+│   │   │   ├── ratings.js
+│   │   │   ├── recipe-data.js
+│   │   │   └── recipe-edit.js
+│   │   ├── license.html
+│   │   ├── recipes
+│   │   │   ├── Breakfast
+│   │   │   │   ├── Amish Baked Oatmeal.html
+│   │   │   │   ├── Bacon Potato Pancakes.html
+│   │   │   │   ├── Baked Oatmeal small.html
+│   │   │   │   ├── Baked Oatmeal.html
+│   │   │   │   ├── Baked Omelette.html
+│   │   │   │   ├── Breakfast Pizza.html
+│   │   │   │   ├── Eggs Benedict.html
+│   │   │   │   ├── French-Toast.html
+│   │   │   │   ├── Musli.html
+│   │   │   │   ├── Omelettes.html
+│   │   │   │   ├── Pancakes.html
+│   │   │   │   └── Scrambled-Eggs.html
+│   │   │   ├── Cookies
+│   │   │   │   ├── Carrot Cookies.html
+│   │   │   │   ├── Chewy Oatmeal Cookies.html
+│   │   │   │   ├── Chocolate Caramel Cookies.html
+│   │   │   │   ├── Chocolate Chip Cookies (with pudding).html
+│   │   │   │   ├── Chocolate Marshmallow Cookie.html
+│   │   │   │   ├── Chocolate Marshmallow Cookies (Peanut Butter).html
+│   │   │   │   ├── Chocolate Marshmallow Cookies.html
+│   │   │   │   ├── Chocolate Sandwiches.html
+│   │   │   │   ├── Chocolate Surprise Cookie.html
+│   │   │   │   ├── Christmas Drop Cookie.html
+│   │   │   │   ├── Chunky Chocolate Peanut Butter Cookies.html
+│   │   │   │   ├── Cinnamon Roll Sugar Cookies.html
+│   │   │   │   ├── Classic Chocolate Chip Cookies.html
+│   │   │   │   ├── Coconut Pecan Cookies.html
+│   │   │   │   ├── Crunchy Date Cookies.html
+│   │   │   │   ├── Date Filled Cookies.html
+│   │   │   │   ├── Farmer Cookie.html
+│   │   │   │   ├── Fig Cookies.html
+│   │   │   │   ├── Frosted Poppy Seed Cookies.html
+│   │   │   │   ├── Frosted Rhubarb Cookies.html
+│   │   │   │   ├── Ginger Snaps.html
+│   │   │   │   ├── Monster Cookies.html
+│   │   │   │   ├── Oatmeal Chocolate Cookies.html
+│   │   │   │   ├── Oatmeal Date Cookie.html
+│   │   │   │   ├── Oatmeal Fruit-Filled Cookies.html
+│   │   │   │   ├── Oatmeal Pumpkin Cookies.html
+│   │   │   │   ├── Peanut Butter Cookies.html
+│   │   │   │   ├── Peanut Butter Sandwich Cookie.html
+│   │   │   │   ├── Peppermint Sugar Cookies.html
+│   │   │   │   ├── Pinwheel Refrigerator Cookies.html
+│   │   │   │   ├── Raspberry Cheesecake Cookies.html
+│   │   │   │   ├── Rolo Cookies.html
+│   │   │   │   ├── Russian Tea Biscuits.html
+│   │   │   │   ├── Schmaut Kuchen.html
+│   │   │   │   ├── Sour Cream Cookies.html
+│   │   │   │   ├── Strawberry Glaze Cookies.html
+│   │   │   │   ├── The Ultimate Chocolate Chip Cookie.html
+│   │   │   │   ├── Turtle Cookies.html
+│   │   │   │   └── Watermelon Cookies.html
+│   │   │   ├── Desserts
+│   │   │   │   ├── 5 Layer Ice-cream Cake.html
+│   │   │   │   ├── Angel Food Cake.html
+│   │   │   │   ├── Apple Crisp.html
+│   │   │   │   ├── Apple-Pie.html
+│   │   │   │   ├── Banana Cream Pie.html
+│   │   │   │   ├── Black Forest Cheesecake.html
+│   │   │   │   ├── Black Forest Freezer Pie.html
+│   │   │   │   ├── Blueberry Cheesecake.html
+│   │   │   │   ├── Breezy Lemon Dessert.html
+│   │   │   │   ├── Brownies.html
+│   │   │   │   ├── Butter Tart.html
+│   │   │   │   ├── Butter Tarts.html
+│   │   │   │   ├── Caramel Mocha Dessert.html
+│   │   │   │   ├── Caramel Nut Roll.html
+│   │   │   │   ├── Caramel Pecan Cheesecake Bars.html
+│   │   │   │   ├── Caramel Toffee Square.html
+│   │   │   │   ├── Cherry Bars.html
+│   │   │   │   ├── Cherry Berry on a Cloud.html
+│   │   │   │   ├── Chocolate Candy Bar Dessert.html
+│   │   │   │   ├── Chocolate Caramel Supreme Pie.html
+│   │   │   │   ├── Chocolate Chip Carrot Bread.html
+│   │   │   │   ├── Chocolate Cream Cheese Balls.html
+│   │   │   │   ├── Chocolate Crunch Brownies.html
+│   │   │   │   ├── Chocolate Marble Brownie.html
+│   │   │   │   ├── Chocolate Oatmeal Cake.html
+│   │   │   │   ├── Chocolate Peanut Torte.html
+│   │   │   │   ├── Chocolate Pudding.html
+│   │   │   │   ├── Chocolate Roll Cake.html
+│   │   │   │   ├── Chocolate Turtle Cheesecake.html
+│   │   │   │   ├── Chocolate Vanilla Swirl Cheesecake.html
+│   │   │   │   ├── Cocoa Krispie Roll.html
+│   │   │   │   ├── Coconut Caramel Pie.html
+│   │   │   │   ├── Coconut Cream Pie.html
+│   │   │   │   ├── Coffee Ice Cream Pie.html
+│   │   │   │   ├── Confetti Dessert.html
+│   │   │   │   ├── Cream Cheese Balls.html
+│   │   │   │   ├── Crisp Marshmallow Balls.html
+│   │   │   │   ├── Crisp Mellow Balls.html
+│   │   │   │   ├── Date Square.html
+│   │   │   │   ├── Drumstick Dessert.html
+│   │   │   │   ├── Dutch Apple Pie.html
+│   │   │   │   ├── Eat More.html
+│   │   │   │   ├── Fresh Strawberry Pie.html
+│   │   │   │   ├── Frozen Lemon Dessert.html
+│   │   │   │   ├── Frozen Mocha Cheesecake.html
+│   │   │   │   ├── Frozen Mocha Marbled Loaf.html
+│   │   │   │   ├── Frozen Peppermint Cheesecake.html
+│   │   │   │   ├── Fruit Pizza.html
+│   │   │   │   ├── Glazed Raspberry Pie.html
+│   │   │   │   ├── Graham Squares.html
+│   │   │   │   ├── Graham Wafers.html
+│   │   │   │   ├── Health Bar.html
+│   │   │   │   ├── Ho Ho Bars.html
+│   │   │   │   ├── Homemade Peanut Butter Cups.html
+│   │   │   │   ├── Ice-Cream.html
+│   │   │   │   ├── Italian Nugget.html
+│   │   │   │   ├── Jelly Roll Cake.html
+│   │   │   │   ├── Kalooah Dessert.html
+│   │   │   │   ├── Kaluah Dessert.html
+│   │   │   │   ├── Kathy’s Carrot Cake.html
+│   │   │   │   ├── Lemon Bar.html
+│   │   │   │   ├── Lemon Poppy Seed Bread.html
+│   │   │   │   ├── Lemon Roll Cake.html
+│   │   │   │   ├── Lemon Square.html
+│   │   │   │   ├── Licorice Caramel Candy.html
+│   │   │   │   ├── Light Fudge.html
+│   │   │   │   ├── Marshmallow Balls.html
+│   │   │   │   ├── Mint Dessert.html
+│   │   │   │   ├── Mom’s Apple Pie.html
+│   │   │   │   ├── Mud Pie.html
+│   │   │   │   ├── Never Fail Cream Puffs.html
+│   │   │   │   ├── Oatmeal Chocolate Cake.html
+│   │   │   │   ├── Oatmeal Fruit Chews.html
+│   │   │   │   ├── Peaches and Cream.html
+│   │   │   │   ├── Peanut Butter Balls.html
+│   │   │   │   ├── Peanut Mellow Balls.html
+│   │   │   │   ├── Pineapple Filled Bar.html
+│   │   │   │   ├── Pistachio Dessert.html
+│   │   │   │   ├── Poppy Seed Pie.html
+│   │   │   │   ├── Poppy Seed square.html
+│   │   │   │   ├── Poppyseed Cake.html
+│   │   │   │   ├── Praline Chocolate Cheesecake.html
+│   │   │   │   ├── Prune Torte.html
+│   │   │   │   ├── Puffed Wheat Squares.html
+│   │   │   │   ├── Pumpkin Bars.html
+│   │   │   │   ├── Pumpkin Patch Bread.html
+│   │   │   │   ├── Pumpkin Pie.html
+│   │   │   │   ├── Pumpkin Praline Torte.html
+│   │   │   │   ├── Pumpkin Scones.html
+│   │   │   │   ├── Pumpkin Torte.html
+│   │   │   │   ├── Queen Elizabeth Cake.html
+│   │   │   │   ├── Rachel’s Brownies.html
+│   │   │   │   ├── Raisin Delight.html
+│   │   │   │   ├── Raspberry Cheesecake.html
+│   │   │   │   ├── Raspberry Cream Cheese Bars.html
+│   │   │   │   ├── Raspberry Delight.html
+│   │   │   │   ├── Raspberry Passion.html
+│   │   │   │   ├── Raspberry Shortcake Cheesecake.html
+│   │   │   │   ├── Rhubarb Cake.html
+│   │   │   │   ├── Rhubarb Cobbler.html
+│   │   │   │   ├── Rhubarb Cream Pie.html
+│   │   │   │   ├── Rhubarb Layer Dessert.html
+│   │   │   │   ├── Rhubarb Oat Bars.html
+│   │   │   │   ├── Rhubarb Pie.html
+│   │   │   │   ├── Rhubarb Sour Cream Pie.html
+│   │   │   │   ├── Rice Krispies Square.html
+│   │   │   │   ├── Rocky Road No-Bake Cheesecake.html
+│   │   │   │   ├── Rocky Road Square.html
+│   │   │   │   ├── Rum Balls.html
+│   │   │   │   ├── Saskatoon Pie Filling.html
+│   │   │   │   ├── Saskatoon Pie.html
+│   │   │   │   ├── Shortbread Crust.html
+│   │   │   │   ├── Snappers.html
+│   │   │   │   ├── Snickers Dessert.html
+│   │   │   │   ├── Sour Cream Raisin Bar.html
+│   │   │   │   ├── Sour Cream Rhubarb Crumble.html
+│   │   │   │   ├── Strawberry Passion.html
+│   │   │   │   ├── Strawberry Pecan Dessert.html
+│   │   │   │   ├── Strawberry Pie.html
+│   │   │   │   ├── Sugar Pie.html
+│   │   │   │   ├── Tapioca.html
+│   │   │   │   ├── Texas Brownies.html
+│   │   │   │   ├── Three-Layer-Rhubarb-Dessert.html
+│   │   │   │   ├── Tiramisu Toffee Torte.html
+│   │   │   │   ├── Tiramisu.html
+│   │   │   │   ├── Toffee.html
+│   │   │   │   ├── Turtles.html
+│   │   │   │   ├── Watergate Cake.html
+│   │   │   │   ├── Wheat Kernel Dessert.html
+│   │   │   │   ├── White Cake Icing.html
+│   │   │   │   ├── Whole Wheat Bread.html
+│   │   │   │   ├── Zucchini Cake w. Queen Elizabeth Icing.html
+│   │   │   │   ├── Zucchini Chocolate Cake.html
+│   │   │   │   └── Zucchini Dessert.html
+│   │   │   ├── Drinks
+│   │   │   │   ├── Iced Cappuccino.html
+│   │   │   │   ├── Irish Cream.html
+│   │   │   │   ├── Peach Ginger Spritz.html
+│   │   │   │   ├── Rhubarb Slush.html
+│   │   │   │   └── Slush.html
+│   │   │   ├── Main Dishes
+│   │   │   │   ├── B-B-Q Meatballs.html
+│   │   │   │   ├── Baked Spaghetti.html
+│   │   │   │   ├── Barbeque and Honey Ribs.html
+│   │   │   │   ├── Beef Rotini.html
+│   │   │   │   ├── Brine Broilers.html
+│   │   │   │   ├── Brine Ribs.html
+│   │   │   │   ├── Cayenne Beef.html
+│   │   │   │   ├── Chicken Burger.html
+│   │   │   │   ├── Chicken Fingers.html
+│   │   │   │   ├── Chicken Pie.html
+│   │   │   │   ├── Chicken Rice Balls.html
+│   │   │   │   ├── Chicken Teriyaki Pieces.html
+│   │   │   │   ├── Chicken Turnovers.html
+│   │   │   │   ├── Chinese Beef or Pork.html
+│   │   │   │   ├── Chinese Ground Beef.html
+│   │   │   │   ├── Crab Pockets.html
+│   │   │   │   ├── Crunch Wrap.html
+│   │   │   │   ├── Curry Chicken.html
+│   │   │   │   ├── Egg Rolls.html
+│   │   │   │   ├── Fettuccini.html
+│   │   │   │   ├── Ginger Beef.html
+│   │   │   │   ├── Grilled Cheeseburger Wraps.html
+│   │   │   │   ├── Hamburger Stew.html
+│   │   │   │   ├── Hamburger.html
+│   │   │   │   ├── Honey Garlic Chicken or Ribs.html
+│   │   │   │   ├── Honey Garlic Ribs.html
+│   │   │   │   ├── Honey Ginger Beef or Pork.html
+│   │   │   │   ├── Lean Pork or Turkey.html
+│   │   │   │   ├── Maple Breaded Chicken Breasts.html
+│   │   │   │   ├── Marinated Mexican Chicken Pizza.html
+│   │   │   │   ├── Mushroom Chicken.html
+│   │   │   │   ├── Nuggets.html
+│   │   │   │   ├── Pepper Beef.html
+│   │   │   │   ├── Piggy Wiggies.html
+│   │   │   │   ├── Pizza Pops.html
+│   │   │   │   ├── Pork Cutlets.html
+│   │   │   │   ├── Pork Loin.html
+│   │   │   │   ├── Pork Teriyaki Pieces.html
+│   │   │   │   ├── Pork with Sweet and Sour.html
+│   │   │   │   ├── Prime Rib.html
+│   │   │   │   ├── Rib Sub.html
+│   │   │   │   ├── Sauce for Ribs and Rice.html
+│   │   │   │   ├── Sauce for Wings.html
+│   │   │   │   ├── Sesame Seed Chicken.html
+│   │   │   │   ├── Shepherd’s Pie.html
+│   │   │   │   ├── Shrimp Rolls.html
+│   │   │   │   ├── Soup in a Bread Bowl.html
+│   │   │   │   ├── Spring Rolls.html
+│   │   │   │   ├── Steak Lo Mein.html
+│   │   │   │   ├── Stir-Fry.html
+│   │   │   │   ├── Stroganoff.html
+│   │   │   │   ├── Stromboli.html
+│   │   │   │   ├── Summer Rolls.html
+│   │   │   │   ├── Teriyaki Chicken.html
+│   │   │   │   ├── Texas Toast.html
+│   │   │   │   ├── Thinly Sliced Beef (Fried).html
+│   │   │   │   ├── Turkey Rolls.html
+│   │   │   │   ├── Wontons With Sweet and Sour.html
+│   │   │   │   ├── Wrapped Hamburger Buns.html
+│   │   │   │   ├── chili.html
+│   │   │   │   └── lasagna.html
+│   │   │   ├── Muffins and Cupcakes
+│   │   │   │   ├── Banana Muffins.html
+│   │   │   │   ├── Banana-Pecan Muffins.html
+│   │   │   │   ├── Black-Bottom Banana Muffins.html
+│   │   │   │   ├── Bran Muffins.html
+│   │   │   │   ├── Chocolate Zucchini Muffins.html
+│   │   │   │   ├── Cinnamon Topped Rhubarb Muffins.html
+│   │   │   │   ├── Cream Cheese Chocolate Cupcakes.html
+│   │   │   │   ├── Cream Cheese Raspberry Muffins.html
+│   │   │   │   ├── Jewish Blueberry Muffins.html
+│   │   │   │   ├── Orange Applesauce Cupcakes.html
+│   │   │   │   ├── Orange Muffins.html
+│   │   │   │   ├── Peach Muffins.html
+│   │   │   │   ├── Pistachio Cupcakes.html
+│   │   │   │   ├── Pumpkin Cupcakes.html
+│   │   │   │   ├── Raspberry Streusel Muffins.html
+│   │   │   │   ├── Rhubarb Cupcakes.html
+│   │   │   │   ├── Shoofly Cupcakes.html
+│   │   │   │   ├── Very Berry Muffins.html
+│   │   │   │   └── Zucchini Cupcakes.html
+│   │   │   ├── Salads
+│   │   │   │   ├── Almond Salad.html
+│   │   │   │   ├── Bacon Cabbage Salad.html
+│   │   │   │   ├── Bang Bang Shrimp Salad.html
+│   │   │   │   ├── Chicken Ranch Salad.html
+│   │   │   │   ├── Colonel’s Salad.html
+│   │   │   │   ├── Cornbread Salad.html
+│   │   │   │   ├── Crab Salad.html
+│   │   │   │   ├── Cucumber Dill Pasta Salad.html
+│   │   │   │   ├── Dorothy Lynch Salad.html
+│   │   │   │   ├── Dressing for Coleslaw.html
+│   │   │   │   ├── Fall Apple Salad.html
+│   │   │   │   ├── Fried Noodle Salad.html
+│   │   │   │   ├── Greek Salad.html
+│   │   │   │   ├── Japanese Cabbage Salad.html
+│   │   │   │   ├── Layered Pasta Salad.html
+│   │   │   │   ├── Macaroni Salad.html
+│   │   │   │   ├── Onion Cucumber Salad.html
+│   │   │   │   ├── Oriental Chicken Salad.html
+│   │   │   │   ├── Oriental Salad.html
+│   │   │   │   ├── Overnight Coleslaw.html
+│   │   │   │   ├── Pacific Rim Salad.html
+│   │   │   │   ├── Penny Salad.html
+│   │   │   │   ├── Popcorn Salad.html
+│   │   │   │   ├── Rice Salad.html
+│   │   │   │   ├── Roman Salad.html
+│   │   │   │   ├── Spaghetti Salad.html
+│   │   │   │   ├── Spinach Salad Dressing.html
+│   │   │   │   ├── Sushi Salad.html
+│   │   │   │   ├── Taco Salad.html
+│   │   │   │   └── Veggie Salad.html
+│   │   │   ├── Sandwiches
+│   │   │   │   ├── Broiler Sandwich.html
+│   │   │   │   ├── Hot Beef Sandwich.html
+│   │   │   │   ├── Marinated Chicken Breasts.html
+│   │   │   │   ├── Mushroom and Swiss.html
+│   │   │   │   ├── Round Sandwich.html
+│   │   │   │   ├── Sweet Onion Chicken Sub.html
+│   │   │   │   ├── Turkey Bacon Sandwich.html
+│   │   │   │   └── Turkey Bunwich.html
+│   │   │   ├── Sides
+│   │   │   │   ├── Bacon Wrapped Water Chestnuts.html
+│   │   │   │   ├── Baked Corn.html
+│   │   │   │   ├── Baked Spinach Dip in Bread.html
+│   │   │   │   ├── Barley Pilaf.html
+│   │   │   │   ├── Bean Sauce.html
+│   │   │   │   ├── Beet Rolls.html
+│   │   │   │   ├── Best Broccoli Casserole.html
+│   │   │   │   ├── Carrot Casserole.html
+│   │   │   │   ├── Challah Bread.html
+│   │   │   │   ├── Coleslaw.html
+│   │   │   │   ├── Crab Pinwheels (Hot).html
+│   │   │   │   ├── Crab Stuffed Mushrooms.html
+│   │   │   │   ├── Creamed Onions.html
+│   │   │   │   ├── Creamy Vegetable Casserole.html
+│   │   │   │   ├── Dill Dip.html
+│   │   │   │   ├── French Onion Casserole.html
+│   │   │   │   ├── Fried Mushrooms.html
+│   │   │   │   ├── Fried Rice.html
+│   │   │   │   ├── Garlic Bread.html
+│   │   │   │   ├── Garlic-Bread.html
+│   │   │   │   ├── Italian Cheese Bread.html
+│   │   │   │   ├── Loaded Biscuits.html
+│   │   │   │   ├── Mashed-Potatoes.html
+│   │   │   │   ├── Mushroom Rolls.html
+│   │   │   │   ├── Mushroom Scalloped Potatoes.html
+│   │   │   │   ├── Pepper Poppers.html
+│   │   │   │   ├── Potato Knedel.html
+│   │   │   │   ├── Potato Puffs.html
+│   │   │   │   ├── Potato Totshelen.html
+│   │   │   │   ├── Pumpkin Square.html
+│   │   │   │   ├── Rice Noodle.html
+│   │   │   │   ├── Sauce for Chinese Greens.html
+│   │   │   │   ├── Sauce for Pork Chops.html
+│   │   │   │   ├── Scalloped Carrots.html
+│   │   │   │   ├── Scalloped Potatoes.html
+│   │   │   │   ├── Shrimp Dip.html
+│   │   │   │   ├── Shrimp Egg Foo Yong.html
+│   │   │   │   ├── Special Squash.html
+│   │   │   │   ├── Spinach Dip.html
+│   │   │   │   ├── Spinach Pastry.html
+│   │   │   │   ├── Stovetop Zucchini Dish.html
+│   │   │   │   ├── Sweet and Sour.html
+│   │   │   │   ├── Waffles.html
+│   │   │   │   ├── Zucchini Fries.html
+│   │   │   │   ├── Zucchini Pizza.html
+│   │   │   │   └── Zucchini Tomato Pie.html
+│   │   │   ├── Soups
+│   │   │   │   ├── Asian Noodle Soup.html
+│   │   │   │   ├── Baked Potato Soup.html
+│   │   │   │   ├── Beef Barley Soup.html
+│   │   │   │   ├── Carrot Soup.html
+│   │   │   │   ├── Cheese Burger Soup.html
+│   │   │   │   ├── Corn Chowder.html
+│   │   │   │   ├── Crab Soup.html
+│   │   │   │   ├── Cream of Chicken Rice Soup.html
+│   │   │   │   ├── Curry Chicken Soup.html
+│   │   │   │   ├── Dumplings.html
+│   │   │   │   ├── Olive Garden’s Chicken and Gnocchi Soup.html
+│   │   │   │   ├── Soup in a Bread Bowl.html
+│   │   │   │   ├── Taco Soup.html
+│   │   │   │   ├── Thai Beef Soup.html
+│   │   │   │   └── Zucchini Chowder.html
+│   │   │   ├── fix_recipe_paths.py
+│   │   │   └── update_recipe_pages.py
+│   │   └── update_recipe_index.py
+│   ├── routes
+│   │   ├── auth.js
+│   │   ├── licenseApi.js
+│   │   ├── licenseRoutes.js
+│   │   ├── ratingRoutes.js
+│   │   └── recipeRoutes.js
+│   ├── server.js
+│   └── utils
+│       ├── generateAdminLicense.js
+│       └── generateLicense.js
+├── service-worker.js
+└── src
+    ├── index.js
+    ├── package-lock.json
+    └── package.json

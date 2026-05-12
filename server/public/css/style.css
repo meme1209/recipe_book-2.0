@@ -1,53 +1,255 @@
 body {
+
   font-family: sans-serif;
+
   margin: 2rem;
+
   background-color: #fff8f0;
+
   color: #333;
+
+  line-height: 1.6;
+
 }
+
+/* ---------------------------------- */
+/* Headings */
+/* ---------------------------------- */
 
 h1 {
+
   color: #d35400;
+
+  margin-bottom: 0.25rem;
+
 }
+
+h2 {
+
+  color: #c04a00;
+
+  margin-bottom: 0.75rem;
+
+}
+
+/* ---------------------------------- */
+/* Header */
+/* ---------------------------------- */
+
+header {
+
+  position: relative;
+
+  margin-bottom: 2rem;
+
+}
+
+/* ---------------------------------- */
+/* Sections */
+/* ---------------------------------- */
 
 section {
+
   margin-bottom: 2rem;
+
+  padding: 1rem;
+
+  background: white;
+
+  border-radius: 10px;
+
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+
 }
+
+/* ---------------------------------- */
+/* Lists */
+/* ---------------------------------- */
 
 ul {
-  list-style-type: none;
-  padding-left: 0;
+
+  padding-left: 1.2rem;
+
 }
 
-li a {
+ol {
+
+  padding-left: 1.4rem;
+
+}
+
+.recipe-ingredients {
+
+  list-style-type: disc;
+
+}
+
+.recipe-instructions {
+
+  list-style-type: decimal;
+
+}
+
+/* ---------------------------------- */
+/* Links */
+/* ---------------------------------- */
+
+a {
+
   text-decoration: none;
+
   color: #2980b9;
+
 }
 
-li a:hover {
+a:hover {
+
   text-decoration: underline;
+
 }
 
-#searchInput {
+/* ---------------------------------- */
+/* Search */
+/* ---------------------------------- */
+
+#SearchInput {
+
   width: 100%;
-  padding: 0.5rem;
+
+  padding: 0.75rem;
+
   margin-bottom: 1rem;
+
   font-size: 1rem;
+
+  border-radius: 6px;
+
+  border: 1px solid #ccc;
+
 }
 
 #searchResults {
+
   list-style: none;
+
   padding-left: 0;
+
 }
 
-#searchResults li a {
-  text-decoration: none;
-  color: #2980b9;
-}
+#searchResults li {
 
-#searchResults li a:hover {
-  text-decoration: underline;
+  margin-bottom: 0.5rem;
+
 }
 
 .hidden {
+
   display: none;
+
+}
+
+/* ---------------------------------- */
+/* Recipe Editor */
+/* ---------------------------------- */
+
+.recipe-editor-toolbar {
+
+  margin-top: 1rem;
+
+  display: flex;
+
+  gap: 0.5rem;
+
+  flex-wrap: wrap;
+
+}
+
+.recipe-editor-toolbar button {
+
+  padding: 0.5rem 0.9rem;
+
+  border: none;
+
+  border-radius: 6px;
+
+  background: #2980b9;
+
+  color: white;
+
+  cursor: pointer;
+
+  font-size: 0.95rem;
+
+}
+
+.recipe-editor-toolbar button:hover {
+
+  opacity: 0.9;
+
+}
+
+.section-delete-btn {
+
+  background: #c0392b !important;
+
+}
+
+/* ---------------------------------- */
+/* Ratings */
+/* ---------------------------------- */
+
+.recipe-rating {
+
+  position: absolute;
+
+  top: 0;
+
+  right: 0;
+
+  text-align: right;
+
+}
+
+.rating-stars {
+
+  line-height: 1;
+
+}
+
+.rating-stars span {
+
+  font-size: 2rem;
+
+  cursor: pointer;
+
+  user-select: none;
+
+  color: #f39c12;
+
+}
+
+.rating-info {
+
+  font-size: 0.95rem;
+
+  margin-top: 4px;
+
+  color: #555;
+
+}
+
+/* ---------------------------------- */
+/* Footer */
+/* ---------------------------------- */
+
+footer {
+
+  margin-top: 3rem;
+
+  text-align: center;
+
+  color: #666;
+
+  font-size: 0.9rem;
+
 }

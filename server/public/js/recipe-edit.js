@@ -1,133 +1,382 @@
-// Shared per-recipe editor: saves edits to localStorage per-device using a recipe id.
+// Advanced Recipe Editor
+// Stable Version
+
 (function () {
+
 	'use strict';
+
 	document.addEventListener('DOMContentLoaded', function () {
-		var root = document.body;
-		var id = root && root.dataset && root.dataset.recipeId;
-		if (!id) return;
 
-		var title = document.querySelector('.recipe-title');
-		var ingredientsLists = document.querySelectorAll('.recipe-ingredients');
-		var instr = document.querySelector('.recipe-instructions');
+		const root = document.body;
 
-		// If there's no title, no ingredients, or no instructions, stop
-		if (!title || ingredientsLists.length === 0 || !instr) return;
+		const recipeId = root?.dataset?.recipeId;
 
-		// Just use the first ingredients section as the editable target
-		var ing = ingredientsLists[0];
+		if (!recipeId) return;
 
-		// Optionally merge all ingredients into one array (not strictly needed for editing)
-		var allIngredients = [];
-		ingredientsLists.forEach(list => {
-			list.querySelectorAll('li').forEach(li => {
-				allIngredients.push(li.textContent.trim());
+		const storageKey = 'recipe::' + recipeId;
+
+		const title = document.querySelector('.recipe-title');
+
+		const header = document.querySelector('header');
+
+		const footer = document.querySelector('footer');
+
+		if (!title || !header || !footer) return;
+
+		// -----------------------------------------
+		// Create editable wrapper
+		// -----------------------------------------
+
+		let editorArea = document.querySelector('.recipe-editor-area');
+
+		if (!editorArea) {
+
+			editorArea = document.createElement('div');
+
+			editorArea.className = 'recipe-editor-area';
+
+			const sections = document.querySelectorAll('section');
+
+			sections.forEach(section => {
+
+				editorArea.appendChild(section);
+
 			});
-		});
 
-		// Preserve originals on first load to allow reset
-		if (!title.dataset.original) title.dataset.original = title.innerHTML;
-		if (!ing.dataset.original) ing.dataset.original = ing.innerHTML;
-		if (!instr.dataset.original) instr.dataset.original = instr.innerHTML;
+			footer.before(editorArea);
 
-		var key = 'recipe::' + id;
-
-		// Restore saved copy if present
-		(function loadSaved() {
-			try {
-				var raw = localStorage.getItem(key);
-				if (!raw) return;
-				var obj = JSON.parse(raw);
-				if (obj.title) title.innerHTML = obj.title;
-				if (obj.ingredients) ing.innerHTML = obj.ingredients;
-				if (obj.instructions) instr.innerHTML = obj.instructions;
-			} catch (e) { /* ignore parse errors/quota errors */ }
-		})();
-
-		// Inject toolbar
-		var header = document.querySelector('header') || root;
-		var toolbar = document.createElement('div');
-		toolbar.className = 'recipe-editor';
-		toolbar.style.cssText = 'margin-top:.5rem; font-size:0.95rem;';
-		toolbar.innerHTML =
-			'<button class="edit-btn" type="button">Edit</button> ' +
-			'<button class="save-btn" type="button" style="display:none">Save</button> ' +
-			'<button class="cancel-btn" type="button" style="display:none">Cancel</button> ' +
-			'<button class="reset-btn" type="button">Reset</button>';
-		header.appendChild(toolbar);
-
-		var editBtn = toolbar.querySelector('.edit-btn');
-		var saveBtn = toolbar.querySelector('.save-btn');
-		var cancelBtn = toolbar.querySelector('.cancel-btn');
-		var resetBtn = toolbar.querySelector('.reset-btn');
-
-		var backup = null;
-		function setEditable(on) {
-			[title, ing, instr].forEach(function (el) {
-				el.contentEditable = on ? 'true' : 'false';
-				el.style.outline = on ? '1px dashed #999' : '';
-				if (!on) el.removeAttribute('spellcheck');
-			});
 		}
 
-		editBtn.addEventListener('click', function () {
-			backup = {
-				title: title.innerHTML,
-				ingredients: ing.innerHTML,
-				instructions: instr.innerHTML
-			};
-			setEditable(true);
-			editBtn.style.display = 'none';
-			saveBtn.style.display = 'inline-block';
-			cancelBtn.style.display = 'inline-block';
-			title.focus();
-			if (window.getSelection && document.createRange) {
-				var range = document.createRange();
-				range.selectNodeContents(title);
-				range.collapse(false);
-				var sel = window.getSelection();
-				sel.removeAllRanges();
-				sel.addRange(range);
-			}
-		});
+		// -----------------------------------------
+		// Save original
+		// -----------------------------------------
 
-		saveBtn.addEventListener('click', function () {
-			var obj = {
-				title: title.innerHTML,
-				ingredients: ing.innerHTML,
-				instructions: instr.innerHTML,
-				savedAt: Date.now()
-			};
+		if (!editorArea.dataset.original) {
+
+			editorArea.dataset.original =
+				editorArea.innerHTML;
+
+		}
+
+		// -----------------------------------------
+		// Restore saved
+		// -----------------------------------------
+
+		(function loadSaved() {
+
 			try {
-				localStorage.setItem(key, JSON.stringify(obj));
-			} catch (e) { /* ignore quota errors */ }
-			setEditable(false);
-			editBtn.style.display = 'inline-block';
-			saveBtn.style.display = 'none';
-			cancelBtn.style.display = 'none';
-		});
 
-		cancelBtn.addEventListener('click', function () {
-			if (backup) {
-				title.innerHTML = backup.title;
-				ing.innerHTML = backup.ingredients;
-				instr.innerHTML = backup.instructions;
+				const raw = localStorage.getItem(storageKey);
+
+				if (!raw) return;
+
+				const obj = JSON.parse(raw);
+
+				if (obj.html) {
+
+					editorArea.innerHTML = obj.html;
+
+				}
+
+			} catch (e) {}
+
+		})();
+
+		// -----------------------------------------
+		// Toolbar
+		// -----------------------------------------
+
+		const toolbar = document.createElement('div');
+
+		toolbar.className = 'recipe-editor-toolbar';
+
+		toolbar.style.cssText =
+			'margin-top:.75rem; display:flex; gap:.5rem; flex-wrap:wrap;';
+
+		toolbar.innerHTML = `
+			<button class="edit-btn" type="button">Edit</button>
+			<button class="save-btn" type="button" style="display:none">Save</button>
+			<button class="cancel-btn" type="button" style="display:none">Cancel</button>
+			<button class="reset-btn" type="button">Reset</button>
+			<button class="add-section-btn" type="button" style="display:none">
+				Add Section
+			</button>
+		`;
+
+		header.appendChild(toolbar);
+
+		const editBtn = toolbar.querySelector('.edit-btn');
+
+		const saveBtn = toolbar.querySelector('.save-btn');
+
+		const cancelBtn = toolbar.querySelector('.cancel-btn');
+
+		const resetBtn = toolbar.querySelector('.reset-btn');
+
+		const addSectionBtn =
+			toolbar.querySelector('.add-section-btn');
+
+		let backupHtml = null;
+
+		// -----------------------------------------
+		// Editable mode
+		// -----------------------------------------
+
+		function setEditable(on) {
+
+			const editableElements =
+				editorArea.querySelectorAll(
+					'h2, h3, p, li'
+				);
+
+			editableElements.forEach(el => {
+
+				el.contentEditable =
+					on ? 'true' : 'false';
+
+				el.style.outline =
+					on ? '1px dashed #999' : '';
+
+			});
+
+			document.querySelectorAll(
+				'.section-delete-btn'
+			).forEach(btn => btn.remove());
+
+			if (on) {
+
+				editorArea.querySelectorAll(
+					'section'
+				).forEach(section => {
+
+					const btn =
+						document.createElement('button');
+
+					btn.type = 'button';
+
+					btn.textContent =
+						'Delete Section';
+
+					btn.className =
+						'section-delete-btn';
+
+					btn.style.cssText =
+						'margin-bottom:.5rem; display:block;';
+
+					btn.addEventListener(
+						'click',
+						function () {
+
+							if (
+								confirm(
+									'Delete this section?'
+								)
+							) {
+
+								section.remove();
+
+							}
+
+						}
+					);
+
+					section.prepend(btn);
+
+				});
+
 			}
-			setEditable(false);
-			editBtn.style.display = 'inline-block';
-			saveBtn.style.display = 'none';
-			cancelBtn.style.display = 'none';
-		});
 
-		resetBtn.addEventListener('click', function () {
-			if (!confirm('Reset to original recipe? This clears your saved copy on this device.')) return;
-			localStorage.removeItem(key);
-			title.innerHTML = title.dataset.original;
-			ing.innerHTML = ing.dataset.original;
-			instr.innerHTML = instr.dataset.original;
-			setEditable(false);
-			editBtn.style.display = 'inline-block';
-			saveBtn.style.display = 'none';
-			cancelBtn.style.display = 'none';
-		});
+		}
+
+		// -----------------------------------------
+		// Add Section
+		// -----------------------------------------
+
+		function addSection() {
+
+			const sectionTitle = prompt(
+				'Section title:',
+				'Notes'
+			);
+
+			if (!sectionTitle) return;
+
+			const sectionType = prompt(
+				'Type "list" or "steps"',
+				'list'
+			);
+
+			const section =
+				document.createElement('section');
+
+			let content = `
+				<h2>${sectionTitle}</h2>
+			`;
+
+			if (
+				sectionType &&
+				sectionType.toLowerCase() === 'steps'
+			) {
+
+				content += `
+					<ol class="recipe-instructions">
+						<li>New step</li>
+					</ol>
+				`;
+
+			} else {
+
+				content += `
+					<ul class="recipe-ingredients">
+						<li>New item</li>
+					</ul>
+				`;
+
+			}
+
+			section.innerHTML = content;
+
+			editorArea.appendChild(section);
+
+			setEditable(true);
+
+		}
+
+		// -----------------------------------------
+		// Edit
+		// -----------------------------------------
+
+		editBtn.addEventListener(
+			'click',
+			function () {
+
+				backupHtml =
+					editorArea.innerHTML;
+
+				setEditable(true);
+
+				editBtn.style.display =
+					'none';
+
+				saveBtn.style.display =
+					'inline-block';
+
+				cancelBtn.style.display =
+					'inline-block';
+
+				addSectionBtn.style.display =
+					'inline-block';
+
+			}
+		);
+
+		// -----------------------------------------
+		// Save
+		// -----------------------------------------
+
+		saveBtn.addEventListener(
+			'click',
+			function () {
+
+				try {
+
+					localStorage.setItem(
+						storageKey,
+						JSON.stringify({
+							html:
+								editorArea.innerHTML,
+							savedAt: Date.now()
+						})
+					);
+
+				} catch (e) {}
+
+				setEditable(false);
+
+				editBtn.style.display =
+					'inline-block';
+
+				saveBtn.style.display =
+					'none';
+
+				cancelBtn.style.display =
+					'none';
+
+				addSectionBtn.style.display =
+					'none';
+
+			}
+		);
+
+		// -----------------------------------------
+		// Cancel
+		// -----------------------------------------
+
+		cancelBtn.addEventListener(
+			'click',
+			function () {
+
+				if (backupHtml) {
+
+					editorArea.innerHTML =
+						backupHtml;
+
+				}
+
+				setEditable(false);
+
+				editBtn.style.display =
+					'inline-block';
+
+				saveBtn.style.display =
+					'none';
+
+				cancelBtn.style.display =
+					'none';
+
+				addSectionBtn.style.display =
+					'none';
+
+			}
+		);
+
+		// -----------------------------------------
+		// Reset
+		// -----------------------------------------
+
+		resetBtn.addEventListener(
+			'click',
+			function () {
+
+				if (
+					!confirm(
+						'Reset recipe to original?'
+					)
+				) {
+					return;
+				}
+
+				localStorage.removeItem(
+					storageKey
+				);
+
+				editorArea.innerHTML =
+					editorArea.dataset.original;
+
+				setEditable(false);
+
+			}
+		);
+
+		// -----------------------------------------
+		// Add Section Button
+		// -----------------------------------------
+
+		addSectionBtn.addEventListener(
+			'click',
+			addSection
+		);
+
 	});
+
 })();

@@ -13,6 +13,8 @@ app.use(express.json());
 // Serve Static Files
 // -----------------------------------
 
+app.use('/api/ratings', require('./routes/ratingRoutes'));
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 // -----------------------------------
